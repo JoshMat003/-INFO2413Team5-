@@ -1,0 +1,68 @@
+<!--
+Author: Joshua Mathew
+Type: Account Creation
+Version No:  1.0
+Date Created: 15/02/2025
+Last Modified: 15/02/2025
+Last Modifier: Joshua Mathew
+-->
+
+
+
+<html>
+<Head> <h1>Acount Creation</h1></Head>
+
+<form>
+<label for = "username"> Username: </label>
+<input type  = "text" id = "username" name = "username" required>
+
+<br>
+<label for = "email"> Email: </label>
+<input type = "email" id = "Email" name = "Email" required>
+
+<br>
+<label for = "PhoneNumber"> PhoneNumber: </label>
+<input type  = "number" id = "PhoneNumber" name = "PhoneNumber" required minlength = "10" maxlength="10"
+oninput = "this.value = this.value.slice(0,10)">
+
+<br>
+<label for = "Age"> Age </label>
+<input type = "number" id = "Age" name = "Age" required minlength="2" maxlength="2"
+ oninput = "this.value = this.value.slice(0,2)">
+
+<br>
+<Label for = "Password"> Password: </Label>
+<input type  = "text" id = "password" name = "password" required>
+<!-- to be encrypted-->
+
+
+<br>
+<label for="TOS"> Click Here to Accept Terms and Services </label> 
+<input type = "CheckBox" required>
+<br>
+<!-- May remove later-->
+<!-- Should store in database once user creates account-->
+
+<input type = "Submit" id="login" name = Login value = "Create Account">
+ <!-- 
+After user creates account this should send them to the home page
+  -->   
+
+
+
+
+
+
+</form>
+
+
+<p><a href="loginPage.html">Continue to Login Page</a></p>
+
+
+
+
+
+
+
+
+</html>
