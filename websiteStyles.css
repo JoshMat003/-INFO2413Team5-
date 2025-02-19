@@ -1,0 +1,61 @@
+  nav{
+        text-align: right;
+        word-spacing: 5px;
+    }
+
+    nav a {
+        text-decoration: none;
+        
+    }
+
+    footer{
+        text-align: center;
+        background-color: #f8f9fa;
+    }
+
+    header{
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;  
+        padding: 10px 20px;
+        background-color: #f8f9fa; 
+    }
+
+    main{
+
+        padding-top: 5%;
+        padding-bottom: 15%;
+        background-image: url(test2.jpg);
+        background-size: cover ; 
+        background-position: center;
+        background-repeat: no-repeat;
+        text-align: center;
+        color: black;
+        
+    }
+
+    .Options-Menu{
+        
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 10%;
+        gap: 10px;
+    }
+
+    .button{
+
+        margin: 175px;
+        margin-top:  1%;
+    }
+    
+    .Button-Menu{
+
+        justify-content: center;
+    }
+
+    .pspacing{
+
+        justify-content: space-between;
+        display: flex;
+       
+    }
