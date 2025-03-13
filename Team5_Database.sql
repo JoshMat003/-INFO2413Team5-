@@ -2,7 +2,7 @@ create database Team5DB;
 
 use Team5DB;
 
-
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'My2312$ql';
 
 |--------------------------------------------------|
 drop table Applicant_Table;
