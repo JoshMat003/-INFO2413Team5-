@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+	<script>
+		console.log('dashboard.js script has been loaded.');
+
+		document.addEventListener('DOMContentLoaded', async () => {
+			const response = await fetch('/applicant/dashboard/details');
+			console.log('Response status:', response.status);
+			if (response.ok) {
+				const applicantDetails = await response.json();
+				console.log('Fetched data:', applicantDetails);
+				document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+				document.getElementById('applicantID').innerHTML = applicantDetails.id; 
+			} else {
+				 console.error('Failed to fetch applicant details');
+			}
+		});
+
+	</script>	
+</head>
+<body>
+    <h1>Welcome, <span id="applicantFirstName"></span>!</h1>
+    <p>Your Applicant ID: <span id="applicantID"></span></p>
+	<b>Test Add Applicant Detail=============</b><br><br>
+	<a href="/AddEducationDetail_v1.html"><b>Add Education Detail</b></a><br><br>
+	<a href="/AddWorkExperience_v1.html"><b>Add Work Experience</b></a><br><br>
+	<a href="/AddPreferredJob_v1.html"><b>Add Preferred Job</b></a><br><br>
+	
+	
+	<b>Test Check Applicant Detail===========</b><br><br>
+	<a href="/CheckEducationDetail_v2.html"><b>Check Education Detail</br></a><br><br>
+	<a href="/CheckWorkExperience_v1.html"><b>Check Work Experience</br></a><br><br>
+	<a href="/CheckPreferredJob_v1.html"><b>Check Preferred Job</br></a><br><br>
+</body>
+</html>
