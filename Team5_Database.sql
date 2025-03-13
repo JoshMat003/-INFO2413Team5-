@@ -179,6 +179,7 @@ SELECT * FROM Institution_Table;
 
 INSERT INTO Institution_Table VALUES
 	(1, 'University of Toronto'),
+	(1, 'University of Toronto'),
 	(2, 'University of British Columbia'),
 	(3, 'McGill University'),
 	(4, 'University of Alberta'),
