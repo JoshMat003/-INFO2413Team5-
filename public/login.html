@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic setup stuff for the webpage -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Job Application System</title>
+
+    <!-- Makes the page look nice -->
+    <style>
+        /* Centers everything and uses a nice font */
+        body {
+            text-align: center;
+            padding: 50px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Makes the form box look neat and centered */
+        .login-form {
+            max-width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Makes the dropdown and text boxes look consistent */
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Makes the login button look nice and green */
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Makes the button darker when you hover over it */
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+
+    <!-- The main login form container -->
+    <div class="login-form">
+        <!-- The form that collects user info -->
+        <form id="loginForm">
+            <!-- Dropdown to pick if you're an applicant, HR, or admin -->
+            <select id="userType" name="userType" required>
+                <option value="">Select User Type</option>
+                <option value="applicant">Applicant</option>
+                <option value="hr">HR Staff</option>
+                <option value="admin">Admin</option>
+            </select>
+
+            <!-- Where you type your email -->
+            <input type="email" id="email" name="email" placeholder="Email" required>
+
+            <!-- Where you type your password -->
+            <input type="password" id="password" name="password" placeholder="Password" required>
+
+            <!-- The button you click to try to log in -->
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <!-- This is the code that makes the login work -->
+    <script>
+        // When someone clicks the login button
+        document.getElementById('loginForm').onsubmit = async function(e) {
+            // Stop the form from refreshing the page
+            e.preventDefault();
+            
+            // Get what the user typed in
+            const userType = document.getElementById('userType').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                // Send the login info to the server to check if it's correct
+                const response = await fetch(`/${userType}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                // If the login worked
+                if (response.ok) {
+                    // Send the user to their dashboard based on who they are
+                    switch(userType) {
+                        case 'applicant':
+                            window.location.href = '/applicant/dashboard';
+                            break;
+                        case 'hr':
+                            window.location.href = '/hr/dashboard';
+                            break;
+                        case 'admin':
+                            window.location.href = '/admin/dashboard';
+                            break;
+                    }
+                } else {
+                    // If the password or email was wrong
+                    alert('Invalid email or password!');
+                }
+            } catch (error) {
+                // If something went wrong with the server
+                alert('An error occurred during login. Please try again.');
+            }
+        };
+    </script>
+</body>
+</html> 
