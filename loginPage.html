@@ -1,25 +1,27 @@
 <!--
 Author: Joshua Mathew
 Type: Account Creation
-Version No:  1.0
+Version No:  2.0
 Status: Active
 Date Created: 15/02/2025
-Last Modified: 15/02/2025
+Last Modified: 03/02/2025
 Last Modifier: Joshua Mathew
 -->
 
-
-
-
 <html>
     <head> 
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title> Login Page</title>
-
+        <link rel="stylesheet" type="text/css" href="websiteStyles.css">
     </head>
-    <H1> Insert Logo Here</H1>
-    <body><H1>Welcome Back!</H1></body>
 
-    <form>
+    <body>
+        <div class = "login-container">
+
+        <H1>Welcome Back to HireHub</H1>
+
+    <form id = "login-form">
     
     <Label for = "Username"> Username: </Label>
     <input type="text" id="UserName" name="UserName" required>
@@ -27,26 +29,26 @@ Last Modifier: Joshua Mathew
     <Br>
 
     <Label for = "Password"> Password: </Label>
-    <input type="text" id="Password" name="Password" reqired>
+    <input type="password" id="Password" name="Password" reqired>
     <br>
 
-    <insert label for = "rememberMe"> Remember Me </label>
+    <div class = "remember-me">
+        <insert label for = "rememberMe"> Remember Me </label>
         <input type = "checkbox" id = "rememberMe" name = "rememberMe">
-        <!-- Add a remember me function-->
-         <br>
     
-    <input type = "Submit" id="login" name = Login value = "Login">
-    <br>
+     
+    
+    </div>
 
+    
 
-
+     <button type = "submit"> Login </button>
     </form>
-
-
     <p><a href="accountCreation.html">Create an Account</a></p>
 
-    <p><a href="forgotpassword.html">Forgot Password?</a></p>
+</div>
 
-
-
+    <script src = "login.js"> </script>
+</body>
 </html>
+
