@@ -1,0 +1,169 @@
+/* basic page setup */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+}
+
+/* navigation */
+nav {
+    text-align: right;
+    word-spacing: 5px;
+}
+
+nav a {
+    text-decoration: none;
+}
+
+/* header and footer */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+}
+
+footer {
+    text-align: center;
+    background-color: #f8f9fa;
+}
+
+/* main content area */
+main {
+    padding-top: 5%;
+    padding-bottom: 15%;
+    background-image: url(test2.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    text-align: center;
+    color: black;
+}
+
+/* login form container */
+.login-container {
+    width: 400px;
+    padding: 40px;
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* welcome text */
+h1 {
+    color: #000;
+    margin-bottom: 40px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* form elements */
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: white;
+}
+
+/* input fields and select */
+.login-container input,
+.login-container select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 20px 0;
+    border: 2px solid black;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.login-container input:focus,
+.login-container select:focus {
+    outline: none;
+    border-color: rgb(30, 255, 0);
+    box-shadow: 0 0 5px rgb(38, 255, 0);
+}
+
+/* labels */
+.login-container label {
+    display: block;
+    text-align: left;
+    font-size: 14px;
+    color: #000;
+    margin-bottom: 0;
+}
+
+/* remember me checkbox */
+.remember-me {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.remember-me input {
+    width: auto;
+    margin: 0 8px 0 0;
+    padding: 0;
+}
+
+.remember-me label {
+    margin: 0;
+}
+
+/* buttons */
+.button-style,
+.login-container button {
+    width: 100%;
+    padding: 12px;
+    background-color: #1492ab;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 0 20px 0;
+}
+
+.button-style:hover,
+.login-container button:hover {
+    background-color: #0f7288;
+}
+
+/* create account link */
+.create-account {
+    color: #1492ab;
+    text-decoration: none;
+    font-size: 14px;
+    display: block;
+}
+
+.create-account:hover {
+    text-decoration: underline;
+}
+
+/* utility classes */
+.Options-Menu {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10%;
+    gap: 10px;
+}
+
+.Button-Menu {
+    justify-content: center;
+}
+
+.pspacing {
+    justify-content: space-between;
+    display: flex;
+} 
