@@ -1,5 +1,7 @@
+// get mysql package
 const mysql = require('mysql');
 
+// set up database connection info
 const pool = mysql.createPool({
 	host: 'localhost',
 	user: 'root',
@@ -7,7 +9,9 @@ const pool = mysql.createPool({
 	database: 'team5dbv2',
 });
 
+// let other files use the database
 module.exports = {
+	// run database commands
 	query: (sql, values) => {
 		return new Promise((resolve, reject) => {
 			pool.query(sql, values, (error, results) => {
@@ -15,7 +19,7 @@ module.exports = {
 					return reject(error);
 				}
 				resolve(results);
-				});
 			});
-		},		
+		});
+	},		
 };
