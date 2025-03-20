@@ -30,31 +30,29 @@ app.use(session({
 	cookie: { secure: false }
 }));
 
-// where to find html files
-app.use(express.static('public'));
+// serve index.html as homepage
+app.get('/', (req, res) => {
+	res.sendFile(path.join(__dirname, 'public/index.html'));
+});
 
-app.use('/CSS', express.static(path.join(__dirname, 'CSS'), {
-    setHeaders: (res, filePath) => {
-        if (filePath.endsWith('.css')) {
-            res.setHeader('Content-Type', 'text/css');
-        }
-    }
-}));
+// serve login.html directly
+app.get('/login.html', (req, res) => {
+	res.sendFile(path.join(__dirname, 'public/login.html'));
+});
 
 // connect pages to their code
 app.use('/applicant', applicantRoutes);
 app.use('/education', educationRoutes);
 app.use('/workExperience', workExperienceRoutes);
 app.use('/preferredJob', preferredJobRoutes);
-app.use('/', loginRoutes);
+app.use('/login', loginRoutes);
 app.use('/admin', adminRoutes);
 app.use('/hr', hrRoutes);
-app.use('/', signedOutRoute);
+app.use('/signout', signedOutRoute);
 
-// send users to login page first
-app.get('/', (req, res) => {
-	res.redirect('/login');
-});
+// where to find static files
+app.use(express.static('public'));
+app.use('/CSS', express.static(path.join(__dirname, 'CSS')));
 
 // start the website
 app.listen(port, () => {
