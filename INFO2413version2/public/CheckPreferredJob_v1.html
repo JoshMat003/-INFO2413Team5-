@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Preferred Job</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Preferred Job</h1>
+    <p>Applicant Name: <span id="applicantFirstName"></span></p>
+    <p>Applicant ID: <span id="applicantID"></span></p>
+
+    <table id="workExperienceTable">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Job Category</th>
+                <th>Job Title</th>
+                <th>Job Position</th>
+				<th>Max Salary(Yearly)</th>
+                <th>Min Salary(Yearly)</th>
+				<th>City (Optional)</th>
+				<th>Province (Optional)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="noRecordRow">
+                <td colspan="5">No Record</td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="deleteButton">Delete Selected</button>
+
+    <script>
+		console.log('Check Work Experience java script has been loaded');
+		
+		// get applicant first name and id from session
+		document.addEventListener('DOMContentLoaded', async () => {
+		const response = await fetch('/applicant/sessionDetails');
+		console.log('Applicant Details Response status:', response.status);
+		
+			if (response.ok) {
+			const applicantDetails = await response.json();
+
+			document.getElementById('applicantFirstName').textContent =applicantDetails.name;
+			document.getElementById('applicantID').textContent = applicantDetails.id;
+			} else {
+				console.error('Failed to fetch /applicant/sessionDetails');
+			}
+		// using applicant ID (stored in session) to query work experience data from PreferredJob_Table
+		const preferredJobResponse = await fetch('/preferredJob/preferredJobDetails');
+		const tableBody = document.getElementById('workExperienceTable').querySelector('tbody');
+		const noRecordRow = document.getElementById('noRecordRow');
+		
+			if (preferredJobResponse.ok) {
+				const preferredJobData = await preferredJobResponse.json();
+				tableBody.innerHTML = '';
+				// check if data present, display the data in table format
+				if (preferredJobData.length > 0 ) {
+					preferredJobData.forEach(job => {
+						const row = document.createElement('tr');
+						row.innerHTML = `
+							<td><input type="checkbox" class="preferredJobCheckbox" data-id="${job.preferences_ID}"></td>
+							<td>${job.JobCategory_Name}</td>
+							<td>${job.JobTitle_Name}</td>
+							<td>${job.JobPosition_Name}</td>
+							<td>${job.PreferredMaxSalary}</td>
+							<td>${job.PreferredMinSalary}</td>
+						`;
+						tableBody.appendChild(row);
+					});
+				} else {
+					noRecordRow.innerHTML = '<td colspan="5"> No Record Found. </td>';
+				}
+			
+			} else {
+				noRecordRow.innerHTML = '<td colspan="5"> Failed to Fetch Preferred Job Details. </td>';
+			} 
+			
+		// Delete Preferred Job details from the table list
+		document.getElementById('deleteButton').addEventListener('click', async () => {
+        const selectedIds = Array.from(document.querySelectorAll('.workExperienceCheckbox:checked'))
+            .map(checkbox => checkbox.getAttribute('data-id'));
+
+        if (selectedIds.length > 0) {
+            const deleteResponse = await fetch('/preferredJob/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ids: selectedIds }),
+            });
+
+            if (deleteResponse.ok) {
+                alert('Selected Preferred Job records deleted successfully.');
+                location.reload(); // Reload the page to update the table
+            } else {
+                alert('Failed to delete selected records.');
+            }
+        } else {
+            alert('Please select at least one record to delete.');
+        }
+    });
+		});
+	</script>
+</body>
+</html>
