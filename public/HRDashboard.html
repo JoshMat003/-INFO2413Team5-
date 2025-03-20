@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Staff Dashboard</title>
+    <style>
+        body {
+            margin-left: auto;
+            margin-right: auto;
+            width: 40%;
+            text-align: center;
+            border: 3px solid black;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>#HR Staff Dashboard#</h1>
+        <h1>==============</h1>
+    </header>
+
+    <main>
+        <h2>Welcome, <span id="hrName"></span>!</h2>
+        <p>HR ID: <span id="hrId"></span></p>
+        
+        <!-- Add your HR features here -->
+        <p>Your HR features will go here</p>
+
+        <button onclick="window.location.href='/logout'">Logout</button>
+    </main>
+
+    <script>
+        // Get HR staff info from session and display it
+        fetch('/hr/session-info')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('hrName').textContent = data.name || 'HR Staff';
+                document.getElementById('hrId').textContent = data.hrId || '';
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+</body>
+</html> 

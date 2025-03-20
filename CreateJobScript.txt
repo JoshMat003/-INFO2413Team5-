@@ -1,0 +1,65 @@
+create table JobCategory_Table (
+	JobCategory_ID int not null,
+    JobCategory_Name varchar(255)
+);
+
+SELECT * FROM JobCategory_Table;
+
+INSERT INTO JobCategory_Table VALUES (
+	(1, 'Healthcare'),
+    (2, 'Information Technology'),
+    (3, 'Engineering'),
+    (4, 'Education'),
+    (5, 'Finance and Accounting'),
+    (6, 'Construction and Trades'),
+    (7, 'Sales and Marketing'),
+    (8, 'Hospitality and Toruism'),
+    (9, 'Manfactruing and Production'),
+    (10, 'Reserarch and Development')
+);
+
+
+create table JobPost_Table (
+	Job_ID varchar(9) not null,
+    ContactEmail varchar(5) not null,
+    Application_DueDate date not null,
+    JobCategory_ID varchar(4) not null,
+    JobTitle_ID varchar(6) not null,
+    JobPosition_ID varchar(4) not null,
+    City_ID varchar(5) not null,
+    Province_ID varchar(4) not null,
+    AnnualSalary_ID varchar(4) not null,
+    Degree_ID varchar(4) not null,
+    RequiredWorkingYear int not null,
+    JobPost_Description text
+);
+
+create table JobPost_Table (
+
+	Job_ID varchar(9) not null, //Auto generated, Auto increment
+
+	JobTitle_ID varchar(6) not null, 
+
+    	JobCategory_ID varchar(4) not null, //refers to Job Category table
+
+	JobPosition_ID varchar(4) not null, //Part-time, Full-time, Casual ---Drop down list
+
+	AnnualSalary int(7) not null,
+
+	Province_ID varchar(4) not null, //refers to Province table
+
+	City_ID varchar(5) not null, //refers to City table
+
+	JobPost_Description text
+
+    	Application_DueDate date not null,
+
+    	ContactEmail varchar(5) not null,
+
+	//Requirements
+    
+    		Degree_ID varchar(4) not null,
+
+    		RequiredWorkingYear int not null,
+
+);

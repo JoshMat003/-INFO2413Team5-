@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Work Experience Details</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Work Experience</h1>
+    <p>Applicant Name: <span id="applicantFirstName"></span></p>
+    <p>Applicant ID: <span id="applicantID"></span></p>
+
+    <table id="workExperienceTable">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Company</th>
+                <th>Work Industry</th>
+				<th>Job Category</th>
+				<th>Job Title</th>
+				<th>Job position</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="noRecordRow">
+                <td colspan="5">No Record</td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="deleteButton">Delete Selected</button>
+
+    <script>
+		console.log('Check Work Experience java script has been loaded');
+		
+		// get applicant first name and id from session
+		document.addEventListener('DOMContentLoaded', async () => {
+		const response = await fetch('/applicant/sessionDetails');
+		console.log('Applicant Details Response status:', response.status);
+		
+			if (response.ok) {
+			const applicantDetails = await response.json();
+
+			document.getElementById('applicantFirstName').textContent =applicantDetails.name;
+			document.getElementById('applicantID').textContent = applicantDetails.id;
+			} else {
+				console.error('Failed to fetch /applicant/sessionDetails');
+			}
+		// using applicant ID (stored in session) to query work experience data from WorkExperience_Table
+		const workExperienceResponse = await fetch('/workExperience/workExperienceDetails');
+		const tableBody = document.getElementById('workExperienceTable').querySelector('tbody');
+		const noRecordRow = document.getElementById('noRecordRow');
+		
+			if (workExperienceResponse.ok) {
+				const workExperienceData = await workExperienceResponse.json();
+				tableBody.innerHTML = '';
+				// check if data present, display the data in table format
+				if (workExperienceData.length > 0 ) {
+					workExperienceData.forEach(work => {
+						const row = document.createElement('tr');
+						row.innerHTML = `
+							<td><input type="checkbox" class="workExperienceCheckbox" data-id="${work.WorkExp_ID}"></td>
+							<td>${work.StartDate}</td>
+							<td>${work.EndDate}</td>
+							<td>${work.Company}</td>
+							<td>${work.WorkIndustry}</td>
+							<td>${work.JobCategory_Name}</td>
+							<td>${work.JobTitle_Name}</td>
+							<td>${work.JobPosition_Name}</td>
+						`;
+						tableBody.appendChild(row);
+					});
+				} else {
+					noRecordRow.innerHTML = '<td colspan="5"> No Record Found. </td>';
+				}
+			
+			} else {
+				noRecordRow.innerHTML = '<td colspan="5"> Failed to Fetch Work Experience Details. </td>';
+			} 
+			
+		// Delete education details from the table list
+		document.getElementById('deleteButton').addEventListener('click', async () => {
+        const selectedIds = Array.from(document.querySelectorAll('.workExperienceCheckbox:checked'))
+            .map(checkbox => checkbox.getAttribute('data-id'));
+
+        if (selectedIds.length > 0) {
+            const deleteResponse = await fetch('/workExperience/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ids: selectedIds }),
+            });
+
+            if (deleteResponse.ok) {
+                alert('Selected work experience records deleted successfully.');
+                location.reload(); // Reload the page to update the table
+            } else {
+                alert('Failed to delete selected records.');
+            }
+        } else {
+            alert('Please select at least one record to delete.');
+        }
+    });
+		});
+	</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

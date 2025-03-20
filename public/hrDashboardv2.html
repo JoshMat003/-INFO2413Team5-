@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,inital-scale=1.0">
+        <title>HR Dashboard</title>
+
+        <!-- google font -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+        <!-- icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+        <!-- css file -->
+        <link rel="stylesheet" href="/CSS/HRDashboard.css">
+        <style>
+            /* style for job form */
+            .job-post-form {
+                background-color: #263043;
+                padding: 20px;
+                border-radius: 10px;
+                display: none; /* hides by default */
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                color: white;
+            }
+            .form-group input, .form-group textarea, .form-group select {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                background-color: #1d2634;
+                color: white;
+            }
+            .form-group textarea {
+                height: 100px;
+                resize: vertical;
+            }
+            .submit-button {
+                background-color: #2962ff;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            .submit-button:hover {
+                background-color: #1e4bd8;
+            }
+            #job-posts-container {
+                padding: 20px;
+            }
+            
+            .job-post-card {
+                background-color: #263043;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
+                color: white;
+            }
+            
+            .job-post-card h3 {
+                color: #2962ff;
+                margin-top: 0;
+            }
+            
+            .job-post-card p {
+                margin: 10px 0;
+            }
+
+            .back-button {
+                background-color: #2962ff;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin-bottom: 20px;
+            }
+
+            .back-button:hover {
+                background-color: #1e4bd8;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="grid-container">
+
+            <!-- top bar -->
+            <header class="header">
+                <div class="menu-icon" onclick="openSidebar()">
+                    <span class="material-symbols-outlined">menu</span>
+                </div>
+                <div class="header-right">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="material-symbols-outlined">mail</span>
+                    <span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+                </div>
+            </header>
+            <!-- end top bar -->
+
+            <!-- menu on the left -->
+            <aside id="sidebar">
+                <div class="sidebar-title">
+                    <div class="sidebar-brand">
+                        HR STAFF
+                    </div>
+                    <span class="material-symbols-outlined" onclick="closeSidebar()">close</span>
+                </div>
+
+                <ul class="sidebar-list">
+                    <li class="sidebar-list-item" onclick="showDashboard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+                    <li class="sidebar-list-item" onclick="showJobPostForm()"><span class="material-symbols-outlined">add_ad</span> Create New Job Post</li>
+                    <li class="sidebar-list-item"><span class="material-symbols-outlined">post</span> View Job Posts</li>
+                    <li class="sidebar-list-item"><span class="material-symbols-outlined">diversity_3</span> View Applicants</li>
+                    <li class="sidebar-list-item"><span class="material-symbols-outlined">settings</span> Profile Settings</li>
+                </ul>
+            </aside>
+            <!-- end menu -->
+
+            <!-- main stuff -->
+            <main class="main-container">
+                <!-- home screen -->
+                <div id="dashboard-view">
+                    <div class="main-title">
+                        <h2>DASHBOARD</h2>
+                    </div>
+
+                    <div class="main-cards">
+                        <div class="card" onclick="showJobPostForm()">
+                            <div class="card-inner">
+                                <h3>Create New Job Post</h3>
+                                <span class="material-symbols-outlined">add_ad</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card" onclick="showJobPosts()">
+                            <div class="card-inner">
+                                <h3>View Job Posts</h3>
+                                <span class="material-symbols-outlined">post</span>
+                            </div>
+                        </div> 
+
+                        <div class="card">
+                            <div class="card-inner">
+                                <h3>View Applicants</h3>
+                                <span class="material-symbols-outlined">diversity_3</span>
+                            </div>
+                        </div> 
+
+                        <div class="card">
+                            <div class="card-inner">
+                                <h3>Profile Settings</h3>
+                                <span class="material-symbols-outlined">settings</span>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+
+                <!-- job list screen -->
+                <div id="job-posts-view" style="display: none;">
+                    <div class="main-title">
+                        <h2>JOB POSTS</h2>
+                        <button onclick="showDashboard()" class="back-button">
+                            <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                        </button>
+                    </div>
+                    <div id="job-posts-container">
+                        <!-- Job posts will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- new job form -->
+                <div id="job-post-form" class="job-post-form">
+                    <div class="main-title">
+                        <h2>Create New Job Post</h2>
+                    </div>
+                    <form id="createJobForm" onsubmit="submitJobPost(event)">
+                        <div class="form-group">
+                            <label for="jobTitle">Job Title:</label>
+                            <input type="text" id="jobTitle" name="jobTitle" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="jobCategory">Job Category:</label>
+                            <select id="jobCategory" name="jobCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="1">Healthcare</option>
+                                <option value="2">Information Technology</option>
+                                <option value="3">Engineering</option>
+                                <option value="4">Education</option>
+                                <option value="5">Finance and Accounting</option>
+                                <option value="6">Construction and Trades</option>
+                                <option value="7">Sales and Marketing</option>
+                                <option value="8">Hospitality and Tourism</option>
+                                <option value="9">Manufacturing and Production</option>
+                                <option value="10">Research and Development</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="jobPosition">Job Position:</label>
+                            <select id="jobPosition" name="jobPosition" required>
+                                <option value="">Select Position Type</option>
+                                <option value="Full-time">Full-time</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Casual">Casual</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="annualSalary">Annual Salary:</label>
+                            <input type="number" id="annualSalary" name="annualSalary" required min="0" max="500000" step="1000" placeholder="Enter salary (max: $500,000)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="province">Province:</label>
+                            <select id="province" name="province" required>
+                                <option value="">Select Province</option>
+                                <option value="AB">Alberta</option>
+                                <option value="BC">British Columbia</option>
+                                <option value="MB">Manitoba</option>
+                                <option value="NB">New Brunswick</option>
+                                <option value="NL">Newfoundland and Labrador</option>
+                                <option value="NS">Nova Scotia</option>
+                                <option value="ON">Ontario</option>
+                                <option value="PE">Prince Edward Island</option>
+                                <option value="QC">Quebec</option>
+                                <option value="SK">Saskatchewan</option>
+                                <option value="NT">Northwest Territories</option>
+                                <option value="NU">Nunavut</option>
+                                <option value="YT">Yukon</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city">City:</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="jobDescription">Job Description:</label>
+                            <textarea id="jobDescription" name="jobDescription" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="applicationDueDate">Application Due Date:</label>
+                            <input type="date" id="applicationDueDate" name="applicationDueDate" required min="">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactEmail">Contact Email:</label>
+                            <input type="email" id="contactEmail" name="contactEmail" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="minEducation">Minimum Education:</label>
+                            <select id="minEducation" name="minEducation" required>
+                                <option value="">Select Education Level</option>
+                                <option value="High School">High School</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Bachelor's">Bachelor's</option>
+                                <option value="Master's">Master's</option>
+                                <option value="PhD">PhD</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="workExperience">Required Work Experience:</label>
+                            <select id="workExperience" name="workExperience" required>
+                                <option value="">Select Experience</option>
+                                <option value="0-1">0-1 years</option>
+                                <option value="1-3">1-3 years</option>
+                                <option value="3-5">3-5 years</option>
+                                <option value="5+">5+ years</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="submit-button">Create Job Post</button>
+                    </form>
+                </div>
+            </main>
+            <!-- end main stuff -->
+        </div>
+
+        <!-- js file -->
+        <script src="/js/hrDashboardScripts.js"></script>
+    </body>
+</html>

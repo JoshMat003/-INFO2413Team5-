@@ -1,0 +1,36 @@
+CREATE TABLE JobPost_Table (
+    job_id INT AUTO_INCREMENT PRIMARY KEY,
+    job_title VARCHAR(255) NOT NULL,
+    job_category_id INT NOT NULL,
+    job_position ENUM('Part-time', 'Full-time', 'Casual') NOT NULL,
+    annual_salary DECIMAL(10,2) CHECK (annual_salary >= 0),
+    province VARCHAR(100),
+    city VARCHAR(100) NOT NULL,
+    job_post_description TEXT NOT NULL,
+    application_due_date DATE NOT NULL,
+    contact_email VARCHAR(255) NOT NULL CHECK (contact_email LIKE '%@%.%'),
+    minimum_education ENUM('High School', 'Diploma', 'Bachelor\'s', 'Master\'s', 'PhD') NOT NULL,
+    required_experience ENUM('0-1 years', '1-3 years', '3-5 years', '5+ years') NOT NULL,
+	
+);
+
+
+CREATE TABLE JobCategory_Table (
+    JobCategory_ID INT AUTO_INCREMENT PRIMARY KEY,
+    JobCategory_Name VARCHAR(255) NOT NULL UNIQUE
+);
+
+INSERT INTO JobCategory_Table (JobCategory_Name) VALUES 
+('Healthcare'),
+('Information Technology'),
+('Engineering'),
+('Education'),
+('Finance and Accounting'),
+('Construction and Trades'),
+('Sales and Marketing'),
+('Hospitality and Tourism'),
+('Manufacturing and Production'),
+('Research and Development');
+
+
+
