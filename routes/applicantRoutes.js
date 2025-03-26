@@ -6,24 +6,43 @@ const path = require('path');
 // Handle applicant login
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-
-    try {
-        // Simple query to check email and password
-        const sql = 'SELECT * FROM Applicant_Table WHERE Applicant_Email = ? AND Applicant_PasswordHash = ?';
-        const result = await db.query(sql, [email, password]);
-
-        if (result.length > 0) {
-            // Store basic info in session
+	let passwordMatch;
+	if (!email || !password) {
+		return res.status(400).send({ message: ' Email and password are required.'});
+	}
+     try {
+        const sql = 'SELECT * FROM Applicant_Table WHERE Applicant_Email = ?';
+        const result = await db.query(sql, [email]);
+		
+       if (result.length > 0) {
+		   
+			console.log('Applicant input password : ', password );
+			console.log('PasswordHash from DB : ', result[0].Applicant_PasswordHash);
+			
+        const hashedPasswordFromDB = result[0].Applicant_PasswordHash;
+		passwordMatch = await bcrypt.compare(password, hashedPasswordFromDB);
+			console.log('PasswordMatch Result : ', passwordMatch);
+			
+	   }
+	   
+        if (passwordMatch) {
+			
+			console.log('Applicant ID value : ', result[0].Applicant_ID);
             req.session.applicantID = result[0].Applicant_ID;
-            req.session.applicantFirstName = result[0].Applicant_FirstName;
-            res.redirect('/applicant/dashboard');
+            req.session.name = result[0].Applicant_FirstName;
+			
+			res.redirect('/applicant/dashboard');
+            
         } else {
-            res.sendStatus(401); // Unauthorized
-        }
+			res.status(401).send({ message: 'Invalid email or password.' });
+		}
+		
     } catch (error) {
-        console.error('Login error:', error);
-        res.sendStatus(500);
+        console.error('Error logging in applicant:', error);
+        res.status(500).send({ message: 'Login failed. Please try again.' });
     }
+
+
 });
 
 // Serve the applicant dashboard page

@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // set up login memory
 app.use(session({
-	secret: 'your-secret-key',
+	secret: 'Team5',
 	resave: false,
 	saveUninitialized: true,
 	cookie: { secure: false }
