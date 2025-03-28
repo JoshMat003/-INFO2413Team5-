@@ -124,7 +124,7 @@ router.post('/register', async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
         await db.query(sql, [applicantId, firstName, lastName, dateOfBirth, email, phoneNum, hashedPassword]);
-        res.status(201).send({ message: 'Applicant registered successfully.' });
+        res.status(204).send();
     } catch (error) {
         console.error('Error registering applicant:', error);
         res.status(500).send({ message: 'Registration failed. Please try again.' });
