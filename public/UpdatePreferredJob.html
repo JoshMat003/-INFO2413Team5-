@@ -1,34 +1,79 @@
-<!DOCTYPE html>
+<!DOCTYPE html> <!--v2-->
 <html lang="en">
 <!--Header session -->
 <head>
 	<meta charset="UTF8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Preferred Job</title>
-	<style>
-		body {margin-left:auto;
-			margin-right:auto;
-			width:40%;
-			text-align: center;
-			border: 3px solid black;
-			border-radius: 15px;}
-		
-	</style>
+	 <!-- google font -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+     <!-- icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	
+	<!-- css file-->
+	<link rel="stylesheet" href="/CSS/ApplicantDashboard.css">
+	
 </head>
 
 <body>
-	<header>
-	<h1>#Preferred Job#</h1>
+
+<div class="grid-container">
+	<!-- top bar -->
+	<header class="header">
+		<div class="header-right">                 
+			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+		</div>
 	</header>
+	<!-- end top bar -->
 	
+		
+	<!-- menu on the left -->
+	<aside id="sidebar">
+		<div class="sidebar-title">
+			<div class="sidebar-brand">
+				WELCOME <br> <span id="applicantFirstName"></span>!
+			</div>
+			
+		</div>
+
+		<ul class="sidebar-list">
+			<li class="sidebar-list-item" onclick="showDashBoard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+				
+			<li class="sidebar-list-item" onclick="AddEducationDetail()"><span class="material-symbols-outlined">add_ad</span> Add Education Detail</li>
+			<li class="sidebar-list-item" onclick="ViewEducationDetail()"><span class="material-symbols-outlined">post</span> View & Edit Education Detail</li>
+			
+			<li class="sidebar-list-item" onclick="AddWorkExperience()"><span class="material-symbols-outlined">add_ad</span> Add Work Experience</li>
+			<li class="sidebar-list-item" onclick="ViewWorkExperience()"><span class="material-symbols-outlined">post</span> View & Edit Work Experience</li>
+			
+			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
+			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
+							
+			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
+		</ul>
+	</aside>
+	 <!-- end menu on the left -->
+			
+	<!-- main stuff -->
+	<main class="main-container">
+		
+		<!-- home screen -->
+		<div id="dashboard-view">
+			
+			<div class="main-title">
+			<h2>Update Preferred Job</h2>
+			</div>
+			
+		</div>	
+		<!-- end home screen-->		
 	<main>
 		<!--form to store user education details
 		The post should generate a new Education_ID for each record.
 		Then store Applicant_ID, Jobcategory_ID, JobTitle_ID, JobPosition_ID, PreferredMaxSalary, PreferredMinSalary
 		//-->
 		
-		<form id="preferredJobForm" method ="post" action="preferredJob/submit">
-			
+		<form id="updatePreferredJobForm" >
+			<input type="hidden" id="preferencesID" name="preferencesID"> <!-- store the preferencesID at the background //--> 
 			<blockquote>
 				<label for="jobCategory">Please Select Your Preferred Job Category:</lable><br>
 				<select size="1" name="jobCategory" id="jobCategory">
@@ -239,34 +284,121 @@
 					<option value="250000">$250,000</option>
 				</select>
 			</blockquote>
-			<input type="Submit">
+			<input type="Submit" value="Update">
+			<button type="button" id="CancelButton">Cancel Update</button>
 		</form>
 	
 	</main>
+	<!-- end main stuff -->	
+</div>
 	<script>
-		document.getElemetByID('preferredJobForm').addEventListener('submit', async (event) => {
-		event.preventDefault(); // prevent default form submission
+		document.addEventListener('DOMContentLoaded', async () => {
+		console.log('Update Work Experience DOM script loaded');
 		
-		const formData = new FormData(event.target);
-		const data = object.formEntries(formData);
-		
-		const response = await fetch('/preferredJobForm/submit', {
-			method: 'Post',
-			headers: {
-				'Content-Type': 'application/json',
-			}
-			body: JSON.stringify(data),
-		
-		});
-		
-		if (response.ok) {
-			alert('Preferred Job saved successfully!');
-			event.taregt.reset(); // reset the form
-		} else {
-			alert('Failed to save Preferred Job.');
-		}
-	}):
+		const params = new URLSearchParams(window.location.search); // load url to "params" for searching workExpId
+		const preferencesID = params.get('preferencesId'); // get workExpId from params
+		console.log('Preferences_ID value is : ', preferencesID); // log the workExpID in console
 
+		if (!preferencesID) {
+			alert('No Preferences ID Provided.');
+			return;
+		}
+		
+		// Get target work experience by wrokExp_ID ----------------------/
+		const response = await fetch(`/preferredJob/details/${preferencesID}`);
+		if (!response.ok) { // error handle
+			alert('Failed to fetch preferred job record.');
+			return;
+		}
+		
+		const preferredJobData = await response.json(); // collect data from routes /details/:id and save in preferredJobData
+		
+		// load preferred job data from preferredJobData and display it in related html id ---------------/
+		document.getElementById('preferencesID').value = preferredJobData.Preferences_ID;
+			console.log('Preferences_ID value is :', preferredJobData.Preferences_ID);
+			
+		document.getElementById('jobCategory').value = preferredJobData.JobCategory_ID; 
+			console.log('_ID value is :', preferredJobData.JobCategory_ID);
+			
+		document.getElementById('jobTitle').value = preferredJobData.JobTitle_ID;
+			console.log('JobTitle_ID value is :', preferredJobData.JobTitle_ID);
+		
+		document.getElementById('jobPosition').value = preferredJobData.JobPosition_ID;
+			console.log('JobPosition_ID value is :', preferredJobData.JobPosition_ID);
+			
+		document.getElementById('maxSalary').value = preferredJobData.PreferredMaxSalary;
+			console.log('Preferred Max Salary value is :', preferredJobData.PreferredMaxSalary);
+			
+		document.getElementById('minSalary').value = preferredJobData.PreferredMinSalary;
+			console.log('Preferred Min Salary value is:', preferredJobData.PreferredMinSalary);
+	
+			
+		// Update updated preferred job information to PreferredJob_Table -----------------/		
+		document.getElementById('updatePreferredJobForm').addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+        
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries()); // Convert form data to an object
+
+        try {
+            const updateResponse = await fetch('/preferredJob/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), // Send the form data as JSON
+            });
+
+            if (updateResponse.ok) {
+                alert('Preferred Job updated successfully!');
+                window.location.href = 'CheckPreferredJob.html'; // Redirect after update
+            } else {
+                alert('Failed to update Preferred Job.');
+            }
+        } catch (error) {
+            alert('An error occurred while updating the preferred job.');
+            console.error(error);
+        }
+    });
+		
+		// Cancel update - Allow user to cancel education history update ------------------/
+		document.getElementById('CancelButton').addEventListener('click', (event) => {
+        window.location.href = 'CheckPreferredJob.html';
+		});
+	});	// end DOM
+
+	function showDashBoard() {
+            window.location.href = '/ApplicantDashboard.html';
+	}
+
+	function AddEducationDetail() {
+		window.location.href = '/AddEducationDetail.html';
+	}
+
+	function ViewEducationDetail() {
+		window.location.href = '/CheckEducationDetail.html';
+	}
+
+	function AddWorkExperience() {
+		window.location.href = '/AddWorkExperience.html';
+	}
+
+	function ViewWorkExperience() {
+		window.location.href = '/CheckWorkExperience.html';
+	}
+
+	function AddPreferredJob() {
+		window.location.href = '/AddPreferredJob.html';
+	}
+	
+	function ViewPreferredJob() {
+		window.location.href = '/checkPreferredJob.html';
+	}
+	
+	function ViewApplicantDetail() {
+		window.location.href = '/CheckApplicantDetail.html';
+	}	
+	</script>
 
 </body>
 </html>
