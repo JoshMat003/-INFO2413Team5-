@@ -1,0 +1,210 @@
+<!DOCTYPE html> <!--v3-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View & Update Work Experience</title>
+     <!-- google font -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+     <!-- icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	
+	<!-- css file-->
+	<link rel="stylesheet" href="/CSS/ApplicantDashboard.css">
+	
+</head>
+<body>
+<div class="grid-container">
+	<!-- top bar -->
+	<header class="header">
+		<div class="header-right">                 
+			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+		</div>
+	</header>
+	<!-- end top bar -->
+	
+		
+	<!-- menu on the left -->
+	<aside id="sidebar">
+		<div class="sidebar-title">
+			<div class="sidebar-brand">
+				WELCOME <br> <span id="applicantFirstName"></span>!
+			</div>
+			
+		</div>
+
+		<ul class="sidebar-list">
+			<li class="sidebar-list-item" onclick="showDashBoard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+				
+			<li class="sidebar-list-item" onclick="AddEducationDetail()"><span class="material-symbols-outlined">add_ad</span> Add Education Detail</li>
+			<li class="sidebar-list-item" onclick="ViewEducationDetail()"><span class="material-symbols-outlined">post</span> View & Edit Education Detail</li>
+			
+			<li class="sidebar-list-item" onclick="AddWorkExperience()"><span class="material-symbols-outlined">add_ad</span> Add Work Experience</li>
+			<li class="sidebar-list-item" onclick="ViewWorkExperience()"><span class="material-symbols-outlined">post</span> View & Edit Work Experience</li>
+			
+			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
+			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
+							
+			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
+		</ul>
+	</aside>
+	 <!-- end menu on the left -->
+			
+	<!-- main stuff -->
+	<main class="main-container">
+		
+		<!-- home screen -->
+		<div id="dashboard-view">
+			
+			<div class="main-title">
+			<h2>View & Update Work Experience</h2>
+			</div>
+			
+		</div>	
+		<!-- end home screen-->	
+		<table id="workExperienceTable">
+			<thead>
+				<tr>
+					<th>Select</th>
+					<th>Start Date</th>
+					<th>End Date</th>
+					<th>Company</th>
+					<th>Work Industry</th>
+					<th>Job Category</th>
+					<th>Job Title</th>
+					<th>Job Position</th>
+					<th>Update</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr id="noRecordRow">
+					<td colspan="9">No Record</td>
+				</tr>
+			</tbody>
+		</table>
+		<button id="deleteButton">Delete Selected</button>
+		
+	</main>	
+	<!-- end main stuff -->	
+</div>
+    <script>
+        console.log('Check Work Experience JavaScript has been loaded');
+
+        // get applicant first name and ID from session
+        document.addEventListener('DOMContentLoaded', async () => {
+            const response = await fetch('/applicant/sessionDetails');
+            console.log('Applicant Details Response status:', response.status);
+
+            if (response.ok) {
+                const applicantDetails = await response.json();
+				
+                document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+
+            } else {
+                console.error('Failed to fetch /applicant/sessionDetails');
+            }
+
+            // using applicant ID (stored in session) to query work experience data from WorkExperience_Table
+			const workExperienceResponse = await fetch('/workExperience/workExperienceDetails');
+			const tableBody = document.getElementById('workExperienceTable').querySelector('tbody');
+			const noRecordRow = document.getElementById('noRecordRow');
+		
+			if (workExperienceResponse.ok) {
+				const workExperienceData = await workExperienceResponse.json();
+				tableBody.innerHTML = '';
+				// check if data present, display the data in table format
+				if (workExperienceData.length > 0 ) {
+					workExperienceData.forEach(work => {
+						const row = document.createElement('tr');
+						row.innerHTML = `
+							<td><input type="checkbox" class="workExperienceCheckbox" data-id="${work.WorkExp_ID}"></td>
+							<td>${work.StartDate}</td>
+							<td>${work.EndDate}</td>
+							<td>${work.Company}</td>
+							<td>${work.WorkIndustry}</td>
+							<td>${work.JobCategory_Name}</td>
+							<td>${work.JobTitle_Name}</td>
+							<td>${work.JobPosition_Name}</td>
+							<td><button class="updateButton" data-id="${work.WorkExp_ID}">Update</td>
+						`;
+						tableBody.appendChild(row);
+					});
+				} else {
+					noRecordRow.innerHTML = '<td colspan="9"> No Record Found. </td>';
+				}
+			} else {
+				noRecordRow.innerHTML = '<td colspan="9"> Failed to Fetch Work Experience Details. </td>';
+			} 
+                    
+            
+			// Delete Work Experience from the table list
+			document.getElementById('deleteButton').addEventListener('click', async () => {
+			const selectedIds = Array.from(document.querySelectorAll('.workExperienceCheckbox:checked'))
+				.map(checkbox => checkbox.getAttribute('data-id'));
+
+			if (selectedIds.length > 0) {
+				const deleteResponse = await fetch('/workExperience/delete', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ ids: selectedIds }),
+				});
+
+				if (deleteResponse.ok) {
+					alert('Selected work experience records deleted successfully.');
+					location.reload(); // Reload the page to update the table
+				} else {
+					alert('Failed to delete selected records.');
+				}
+			} else {
+				alert('Please select at least one record to delete.');
+			}
+			});
+			
+			// update single work record from the table list
+			tableBody.addEventListener('click', event => {
+			if (event.target.classList.contains('updateButton')) {
+				const workExpId = event.target.getAttribute('data-id');
+				window.location.href = `UpdateWorkExperience.html?workExpId=${workExpId}`;
+			}
+			});
+			
+		}); // end DOM
+		
+		function showDashBoard() {
+            window.location.href = '/ApplicantDashboard.html';
+        }
+
+        function AddEducationDetail() {
+            window.location.href = '/AddEducationDetail.html';
+        }
+
+        function ViewEducationDetail() {
+            window.location.href = '/CheckEducationDetail.html';
+        }
+
+        function AddWorkExperience() {
+            window.location.href = '/AddWorkExperience.html';
+        }
+
+        function ViewWorkExperience() {
+            window.location.href = '/CheckWorkExperience.html';
+        }
+
+        function AddPreferredJob() {
+            window.location.href = '/AddPreferredJob.html';
+        }
+		
+		function ViewPreferredJob() {
+            window.location.href = '/checkPreferredJob.html';
+        }
+		
+		function ViewApplicantDetail() {
+            window.location.href = '/CheckApplicantDetail.html';
+        }
+	</script>
+	
+</body>
+</html>	

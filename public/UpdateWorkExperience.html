@@ -1,0 +1,619 @@
+<!DOCTYPE html> <!-- v2 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Work Experience</title>
+	<!-- google font -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+     <!-- icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	
+	<!-- css file-->
+	<link rel="stylesheet" href="/CSS/ApplicantDashboard.css">
+	
+</head>
+<body>
+
+<div class="grid-container">
+	<!-- top bar -->
+	<header class="header">
+		<div class="header-right">                 
+			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+		</div>
+	</header>
+	<!-- end top bar -->
+	
+		
+	<!-- menu on the left -->
+	<aside id="sidebar">
+		<div class="sidebar-title">
+			<div class="sidebar-brand">
+				WELCOME <br> <span id="applicantFirstName"></span>!
+			</div>
+			
+		</div>
+
+		<ul class="sidebar-list">
+			<li class="sidebar-list-item" onclick="showDashBoard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+				
+			<li class="sidebar-list-item" onclick="AddEducationDetail()"><span class="material-symbols-outlined">add_ad</span> Add Education Detail</li>
+			<li class="sidebar-list-item" onclick="ViewEducationDetail()"><span class="material-symbols-outlined">post</span> View & Edit Education Detail</li>
+			
+			<li class="sidebar-list-item" onclick="AddWorkExperience()"><span class="material-symbols-outlined">add_ad</span> Add Work Experience</li>
+			<li class="sidebar-list-item" onclick="ViewWorkExperience()"><span class="material-symbols-outlined">post</span> View & Edit Work Experience</li>
+			
+			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
+			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
+							
+			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
+		</ul>
+	</aside>
+	 <!-- end menu on the left -->
+			
+	<!-- main stuff -->
+	<main class="main-container">
+		
+		<!-- home screen -->
+		<div id="dashboard-view">
+			
+			<div class="main-title">
+			<h2>Update Work Experience</h2>
+			</div>
+			
+		</div>	
+		<!-- end home screen-->		
+	<main>
+		<!--form to store user work experience details
+		The post should generate a new WorkExp_ID for each record.
+		Then store WorkExp_ID, Applicant_ID, JobCategory_ID, JobTitle_ID, JobPosition_ID, Company,
+		StartDate, EndDate, WorkIndustry
+		//-->
+		
+		<form id="updateWorkExperienceForm">
+			<input type="hidden" id="workExpID" name="workExpID"> <!-- Store the workExpID at the background //-->
+			
+			<blockquote>
+				<label for="companyName">Please Input The Company Name:</lable><br>
+				<input list="companyList" name="companyName" id="companyName">
+					<datalist id="companyList">
+						<option value="Royal Bank of Canada (RBC)">Royal Bank of Canada (RBC)</option>
+						<option value="Toronto-Dominion Bank (TD)">Toronto-Dominion Bank (TD)</option>
+						<option value="Bank of Nova Scotia">Bank of Nova Scotia</option>
+						<option value="Enbridge Inc.">Enbridge Inc.</option>
+						<option value="Canadian National Railway">Canadian National Railway</option>
+						<option value="Suncor Energy">Suncor Energy</option>
+						<option value="BCE Inc. (Bell Canada)">BCE Inc. (Bell Canada)</option>
+						<option value="Brookfield Asset Management">Brookfield Asset Management</option>
+						<option value="Canadian Pacific Railway">Canadian Pacific Railway</option>
+						<option value="Manulife Financial">Manulife Financial</option>
+						<option value="Canadian Imperial Bank of Commerce (CIBC)">Canadian Imperial Bank of Commerce (CIBC)</option>
+						<option value="Rogers Communications">Rogers Communications</option>
+						<option value="Barrick Gold">Barrick Gold</option>
+						<option value="Shopify">Shopify</option>
+						<option value="Sun Life Financial">Sun Life Financial</option>
+						<option value="Imperial Oil">Imperial Oil</option>
+						<option value="Telus Corporation">Telus Corporation</option>
+						<option value="Waste Connections">Waste Connections</option>
+						<option value="Fortis Inc.">Fortis Inc.</option>
+						<option value="Agrium Inc. (Nutrien)">Agrium Inc. (Nutrien)</option>
+						<option value="Alimentation Couche-Tard">Alimentation Couche-Tard</option>
+						<option value="SNC-Lavalin">SNC-Lavalin</option>
+						<option value="Thomson Reuters">Thomson Reuters</option>
+						<option value="Gildan Activewear">Gildan Activewear</option>
+						<option value="George Weston Limited">George Weston Limited</option>
+						<option value="Loblaw Companies">Loblaw Companies</option>
+						<option value="BMO Financial Group">BMO Financial Group</option>
+						<option value="Magna International">Magna International</option>
+						<option value="Power Corporation of Canada">Power Corporation of Canada</option>
+						<option value="PrairieSky Royalty">PrairieSky Royalty</option>
+						<option value="Intact Financial">Intact Financial</option>
+						<option value="First Quantum Minerals">First Quantum Minerals</option>
+						<option value="Canadian Tire Corporation">Canadian Tire Corporation</option>
+						<option value="Restaurant Brands International">Restaurant Brands International</option>
+						<option value="Canadian Utilities">Canadian Utilities</option>
+						<option value="WestJet Airlines">WestJet Airlines</option>
+						<option value="Shaw Communications">Shaw Communications</option>
+						<option value="Pembina Pipeline">Pembina Pipeline</option>
+						<option value="Cogeco Communications">Cogeco Communications</option>
+						<option value="Husky Energy">Husky Energy</option>
+						<option value="Element Fleet Management">Element Fleet Management</option>
+						<option value="OpenText Corporation">OpenText Corporation</option>
+						<option value="Onex Corporation">Onex Corporation</option>
+						<option value="Kinross Gold">Kinross Gold</option>
+						<option value="Constellation Software">Constellation Software</option>
+						<option value="National Bank of Canada">National Bank of Canada</option>
+						<option value="Wheaton Precious Metals">Wheaton Precious Metals</option>
+						<option value="CCL Industries">CCL Industries</option>
+						<option value="Maple Leaf Foods">Maple Leaf Foods</option>
+						<option value="Domtar Corporation">Domtar Corporation</option>
+						<option value="Imperial Metals">Imperial Metals</option>
+						<option value="CI Financial">CI Financial</option>
+						<option value="TELUS Health">TELUS Health</option>
+						<option value="CAE Inc.">CAE Inc.</option>
+						<option value="Emera Inc.">Emera Inc.</option>
+						<option value="Labrador Iron Ore Royalty Corporation">Labrador Iron Ore Royalty Corporation</option>
+						<option value="Cenovus Energy">Cenovus Energy</option>
+						<option value="Alamos Gold">Alamos Gold</option>
+						<option value="Ansys Inc.">Ansys Inc.</option>
+						<option value="EnCana Corporation">EnCana Corporation</option>
+						<option value="TransCanada Corporation (TC Energy)">TransCanada Corporation (TC Energy)</option>
+						<option value="L3Harris Technologies">L3Harris Technologies</option>
+						<option value="Nutrien">Nutrien</option>
+						<option value="Badger Infrastructure Solutions">Badger Infrastructure Solutions</option>
+						<option value="Intertape Polymer Group">Intertape Polymer Group</option>
+						<option value="Corus Entertainment">Corus Entertainment</option>
+						<option value="Linamar Corporation">Linamar Corporation</option>
+						<option value="FirstService Corporation">FirstService Corporation</option>
+						<option value="Fairfax Financial">Fairfax Financial</option>
+						<option value="Aritzia">Aritzia</option>
+						<option value="Richelieu Hardware">Richelieu Hardware</option>
+						<option value="Northland Power">Northland Power</option>
+						<option value="Ritchie Bros. Auctioneers">Ritchie Bros. Auctioneers</option>
+						<option value="Shopify Inc.">Shopify Inc.</option>
+						<option value="WSP Global">WSP Global</option>
+						<option value="Boyd Group Services">Boyd Group Services</option>
+						<option value="Great-West Lifeco">Great-West Lifeco</option>
+						<option value="Ag Growth International">Ag Growth International</option>
+						<option value="AECOM">AECOM</option>
+						<option value="Cineworld Group">Cineworld Group</option>
+						<option value="Canadian Western Bank">Canadian Western Bank</option>
+						<option value="Cott Corporation">Cott Corporation</option>
+						<option value="Stantec Inc.">Stantec Inc.</option>
+						<option value="Loblaws">Loblaws</option>
+						<option value="Brookfield Renewable Partners">Brookfield Renewable Partners</option>
+						<option value="Trillium Health Partners">Trillium Health Partners</option>
+						<option value="Intercontinental Exchange">Intercontinental Exchange</option>
+						<option value="Cando Rail & Terminals">Cando Rail & Terminals</option>
+						<option value="Sienna Senior Living">Sienna Senior Living</option>
+						<option value="BlackBerry Limited">BlackBerry Limited</option>
+						<option value="Constellation Brands">Constellation Brands</option>
+						<option value="AGF Management">AGF Management</option>
+						<option value="Badger Infrastructure">Badger Infrastructure</option>
+						<option value="West Fraser Timber">West Fraser Timber</option>
+						<option value="Superior Plus Corporation">Superior Plus Corporation</option>
+						<option value="Horizon North Logistics">Horizon North Logistics</option>
+						<option value="Osisko Gold Royalties">Osisko Gold Royalties</option>
+						<option value="Sprott Inc.">Sprott Inc.</option>
+						<option value="KPMG">KPMG</option>
+						<option value="Deloitte">Deloitte</option>
+						<option value="PwC Canada">PwC Canada</option>
+						<option value="EY Canada">EY Canada</option>
+						<option value="Fiera Capital">Fiera Capital</option>
+						<option value="Greenbriar Capital">Greenbriar Capital</option>
+						<option value="Killam Apartment REIT">Killam Apartment REIT</option>
+						<option value="SmartCentres REIT">SmartCentres REIT</option>
+						<option value="Altus Group">Altus Group</option>
+						<option value="Artis REIT">Artis REIT</option>
+						<option value="Choice Properties REIT">Choice Properties REIT</option>
+						<option value="Canderel">Canderel</option>
+						<option value="Dream Office REIT">Dream Office REIT</option>
+						<option value="Granite REIT">Granite REIT</option>
+						<option value="H&R REIT">H&R REIT</option>
+						<option value="Northview Apartment REIT">Northview Apartment REIT</option>
+						<option value="Park Lawn Corporation">Park Lawn Corporation</option>
+						<option value="ProMetic Life Sciences">ProMetic Life Sciences</option>
+						<option value="Pason Systems">Pason Systems</option>
+						<option value="PPG Industries">PPG Industries</option>
+						<option value="Raging River Exploration">Raging River Exploration</option>
+						<option value="Secure Energy Services">Secure Energy Services</option>
+						<option value="Superior Plus">Superior Plus</option>
+						<option value="Suncor Energy">Suncor Energy</option>
+						<option value="Viterra">Viterra</option>
+						<option value="Vistra Energy">Vistra Energy</option>
+						<option value="WestJet">WestJet</option>
+						<option value="Zymeworks">Zymeworks</option>
+						<option value="Aon Canada">Aon Canada</option>
+						<option value="Aon plc">Aon plc</option>
+						<option value="CGI Group">CGI Group</option>
+						<option value="Gilead Sciences Canada">Gilead Sciences Canada</option>
+						<option value="Johnson & Johnson Inc.">Johnson & Johnson Inc.</option>
+						<option value="Merck Canada">Merck Canada</option>
+						<option value="Pfizer Canada">Pfizer Canada</option>
+						<option value="Roche Canada">Roche Canada</option>
+						<option value="Novartis Pharmaceuticals Canada">Novartis Pharmaceuticals Canada</option>
+						<option value="Sanofi Canada">Sanofi Canada</option>
+						<option value="Siemens Canada">Siemens Canada</option>
+						<option value="Thermo Fisher Scientific">Thermo Fisher Scientific</option>
+						<option value="Univar Solutions">Univar Solutions</option>
+						<option value="Vector Aerospace">Vector Aerospace</option>
+						<option value="Wesfarmers">Wesfarmers</option>
+						<option value="Woodbine Entertainment Group">Woodbine Entertainment Group</option>
+						<option value="Zayo Group">Zayo Group</option>
+						<option value="3M Canada">3M Canada</option>
+						<option value="AbbVie Corporation">AbbVie Corporation</option>
+						<option value="Air Canada">Air Canada</option>
+						<option value="Bombardier Inc.">Bombardier Inc.</option>
+						<option value="CAE">CAE</option>
+						<option value="CNRL">CNRL</option>
+						<option value="CN">CN</option>
+						<option value="D2L Corporation">D2L Corporation</option>
+						<option value="Denso Manufacturing Canada">Denso Manufacturing Canada</option>
+						<option value="EDC">EDC</option>
+						<option value="Encommon">Encommon</option>
+						<option value="Enerflex Ltd.">Enerflex Ltd.</option>
+						<option value="Finning International">Finning International</option>
+						<option value="Golder Associates">Golder Associates</option>
+						<option value="HCL Technologies">HCL Technologies</option>
+						<option value="Hootsuite">Hootsuite</option>
+						<option value="Husky Energy">Husky Energy</option>
+						<option value="Kiewit Corporation">Kiewit Corporation</option>
+						<option value="Knight Piesold">Knight Piesold</option>
+						<option value="Linde Canada">Linde Canada</option>
+						<option value="Loblaws Supermarkets">Loblaws Supermarkets</option>
+						<option value="Lockheed Martin Canada">Lockheed Martin Canada</option>
+						<option value="Maple Leaf Foods">Maple Leaf Foods</option>
+						<option value="MDA">MDA</option>
+						<option value="NFI Group">NFI Group</option>
+						<option value="Northern Dynasty Minerals">Northern Dynasty Minerals</option>
+						<option value="OpenText">OpenText</option>
+						<option value="PCL Constructors">PCL Constructors</option>
+						<option value="Precision Drilling">Precision Drilling</option>
+						<option value="Ritchie Bros.">Ritchie Bros.</option>
+						<option value="Rockwell Automation">Rockwell Automation</option>
+						<option value="Saputo">Saputo</option>
+						<option value="Suncor">Suncor</option>
+						<option value="Teck Resources">Teck Resources</option>
+						<option value="Vale Canada">Vale Canada</option>
+						<option value="Weyerhaeuser Canada">Weyerhaeuser Canada</option>
+						<option value="Wood">Wood</option>
+						<option value="Xplornet Communications">Xplornet Communications</option>
+						<option value="ZTE Canada">ZTE Canada</option>
+						<option value="BHP Billiton">BHP Billiton</option>
+						<option value="Cameco Corporation">Cameco Corporation</option>
+						<option value="Canfor Corporation">Canfor Corporation</option>
+						<option value="Capital Power Corporation">Capital Power Corporation</option>
+						<option value="Ceres Global Ag Corp">Ceres Global Ag Corp</option>
+						<option value="Emera">Emera</option>
+						<option value="First Quantum">First Quantum</option>
+						<option value="FortisBC">FortisBC</option>
+						<option value="Gildan">Gildan</option>
+						<option value="Ivanhoe Mines">Ivanhoe Mines</option>
+						<option value="KGHM">KGHM</option>
+						<option value="Kinetic Construction">Kinetic Construction</option>
+						<option value="Lundin Mining">Lundin Mining</option>
+						<option value="NexGen Energy">NexGen Energy</option>
+						<option value="OceanaGold">OceanaGold</option>
+						<option value="Pan American Silver">Pan American Silver</option>
+						<option value="Sherritt International">Sherritt International</option>
+						<option value="Teck Resources">Teck Resources</option>
+					</datalist>
+			</blockquote>
+			
+				
+			<blockquote>
+				<label for="workIndustry">Please Input The Work Industry:</lable><br>
+				<input list="industryList" name="workIndustry" id="workIndustry">
+					<datalist id="industryList">
+						<option value="Healthcare and Social Assistance">Healthcare and Social Assistance</option>
+						<option value="Retail Trade">Retail Trade</option>
+						<option value="Professional, Scientific, and Technical Services">Professional, Scientific, and Technical Services</option>
+						<option value="Construction">Construction</option>
+						<option value="Education Services">Education Services</option>
+						<option value="Manufacturing">Manufacturing</option>
+						<option value="Finance and Insurance">Finance and Insurance</option>
+						<option value="Accommodation and Food Services">Accommodation and Food Services</option>
+						<option value="Information and Cultural Industries">Information and Cultural Industries</option>
+						<option value="Public Administration">Public Administration</option>
+						<option value="Wholesale Trade">Wholesale Trade</option>
+						<option value="Transportation and Warehousing">Transportation and Warehousing</option>
+						<option value="Real Estate and Rental and Leasing">Real Estate and Rental and Leasing</option>
+						<option value="Mining and Quarrying">Mining, Quarrying, and Oil and Gas Extraction</option>
+						<option value="Arts, Entertainment, and Recreation">Arts, Entertainment, and Recreation</option>
+						<option value="Agriculture, Forestry, Fishing, and Hunting">Agriculture, Forestry, Fishing, and Hunting</option>
+						<option value="Utilities">Utilities</option>
+						<option value="Management of Companies and Enterprises">Management of Companies and Enterprises</option>
+						<option value="Administrative and Support, Waste Management, and Remediation Services">Administrative and Support, Waste Management, and Remediation Services</option>
+						<option value="Construction Services">Construction Services</option>
+						<option value="Telecommunications">Telecommunications</option>
+						<option value="Publishing Industries">Publishing Industries</option>
+						<option value="Chemical Manufacturing">Chemical Manufacturing</option>
+						<option value="Textile and Clothing Manufacturing">Textile and Clothing Manufacturing</option>
+						<option value="Food Manufacturing">Food Manufacturing</option>
+						<option value="Pharmaceutical Manufacturing">Pharmaceutical Manufacturing</option>
+						<option value="Aerospace Manufacturing">Aerospace Manufacturing</option>
+						<option value="Oil and Gas Extraction">Oil and Gas Extraction</option>
+						<option value="Biotechnology">Biotechnology</option>
+						<option value="Environmental Services">Environmental Services</option>
+					</datalist>
+			</blockquote>
+			
+			<blockquote>
+				<label for="jobCategory">Please Select Your Job Category:</lable><br>
+				<select size="1" name="jobCategory" id="jobCategory">
+					<option value="">Select your option</option>
+					<option value="1">Healthcare</option>
+					<option value="2">Information Technology</option>
+					<option value="3">Engineering</option>
+					<option value="4">Education</option>
+					<option value="5">Finance and Accounting</option>
+					<option value="6">Construction and Trades</option>
+					<option value="7">Sales and Marketing</option>
+					<option value="8">Hospitality and Tourism</option>
+					<option value="9">Manufacturing and Production</option>
+					<option value="10">Research and Development</option>
+				</select>
+			</blockquote>
+			
+			<blockquote>
+				<label for="jobTitle">Please Select Your Job Title:</lable><br>
+				<select size="1" name="jobTitle" id="jobTitle">
+				<option value="">Select your option</option>
+					<optgroup label="Healthcare">
+						<option value="101">Nurse</option>
+						<option value="102">Physician</option>
+						<option value="103">Pharmacist</option>
+						<option value="104">Medical Assistant</option>
+						<option value="105">Physical Therapist</option>
+						<option value="106">Occupational Technologist</option>
+						<option value="107">Radiologic Technologist</option>
+						<option value="108">Surgical Technician</option>
+						<option value="109">Health Information Manager</option>
+						<option value="110">Clinical Research Coordinator</option>
+					</optgroup>
+					
+					<optgroup label="Information Technology">
+						<option value="201">Software Developer</option>
+						<option value="202">Systems Analyst</option>
+						<option value="203">Network Administrator</option>
+						<option value="204">Data Scientist</option>
+						<option value="205">IT Support Specialist</option>
+						<option value="206">Cybersecurity Analyst</option>
+						<option value="207">Database Administrator</option>
+						<option value="208">Web Developer</option>
+						<option value="209">Cloud Solutions Architect</option>
+						<option value="210">DevOps Engineer</option>
+					</optgroup>
+					
+					<optgroup label="Engineering">
+						<option value="301">Civil Engineer</option>
+						<option value="302">Mechanical Engineer</option>
+						<option value="303">Electrical Engineer</option>
+						<option value="304">Chemical Engineer</option>
+						<option value="305">Software Engineer</option>
+						<option value="306">Environmental Engineer</option>
+						<option value="307">Structural Engineer</option>
+						<option value="308">Industrial Engineer</option>
+						<option value="309">Aerospace Engineer</option>
+						<option value="310">Project Engineer</option>
+					</optgroup>
+					
+					<optgroup label="Education">
+						<option value="401">Teacher</option>
+						<option value="402">School Counselor</option>
+						<option value="403">Principal</option>
+						<option value="404">Special Education Teacher</option>
+						<option value="405">Educational Administrator</option>
+						<option value="406">Curriculum Developer</option>
+						<option value="407">Early Childhood Educator</option>
+						<option value="408">Instructional Designer</option>
+						<option value="409">University Professor</option>
+						<option value="410">Adult Education Instructor</option>
+					</optgroup>
+					
+					<optgroup label="Finance and Accounting">
+						<option value="501">Accountant</option>
+						<option value="502">Financial Analyst</option>
+						<option value="503">Auditor</option>
+						<option value="504">Tax Specialist</option>
+						<option value="505">Controller</option>
+						<option value="506">Investment Banker</option>
+						<option value="507">Financial Planner</option>
+						<option value="508">Budget analyst</option>
+						<option value="509">Payroll Specialist</option>
+						<option value="510">Credit Analyst</option>
+					</optgroup>
+					
+					<optgroup label="Construction and Trades">
+						<option value="601">Construction Manager</option>
+						<option value="602">Electrician</option>
+						<option value="603">Plumber</option>
+						<option value="604">Carpenter</option>
+						<option value="605">Heavy Equipment Operator</option>
+						<option value="606">Mason</option>
+						<option value="607">HAVC Technician</option>
+						<option value="608">Project Superintendent</option>
+						<option value="609">Construction Estimator</option>
+						<option value="610">Building Inspector</option>
+					</optgroup>
+					
+					<optgroup label="Sales and Marketing">
+						<option value="701">Sales Representative</option>
+						<option value="702">Marketing Manager</option>
+						<option value="703">Brand Manager</option>
+						<option value="704">Business Development Manager</option>
+						<option value="705">Account Executive</option>
+						<option value="706">Digital Marketing Specialist</option>
+						<option value="707">Market Research Analyst</option>
+						<option value="708">Sales Engineer</option>
+						<option value="709">Social Media Manager</option>
+						<option value="710">Content Marketing Specialist</option>
+					</optgroup>
+					
+					<optgroup label="Hospitality and Production">
+						<option value="801">Hotel Manager</option>
+						<option value="802">Event PLanner</option>
+						<option value="803">Restaurant Manager</option>
+						<option value="804">Travel Agent</option>
+						<option value="805">Tour Guide</option>
+						<option value="806">Front Desk Agent</option>
+						<option value="807">Chef</option>
+						<option value="808">Concierge</option>
+						<option value="809">Catering Manager</option>
+						<option value="810">Housekeeping Supervisor</option>
+					</optgroup>
+					
+					<optgroup label="Manufacturing and Production">
+						<option value="901">Production Supervisor</option>
+						<option value="902">Quality Control Inspector</option>
+						<option value="903">Manufacturing Engineer</option>
+						<option value="904">Assembly Line Worker</option>
+						<option value="905">Process Technician</option>
+						<option value="906">Supply Chain Manager</option>
+						<option value="907">Machine Operator</option>
+						<option value="908">Inventory Control Specialist</option>
+						<option value="909">Warehouse Manager</option>
+						<option value="910">Logistics Coordinator</option>
+						
+					</optgroup>
+					
+					<optgroup label="Research and Development">
+						<option value="1001">Research Scientist</option>
+						<option value="1002">Production Development Engineer</option>
+						<option value="1003">Clinical Research Associate</option>
+						<option value="1004">R&D Manager</option>
+						<option value="1005">Biochemist</option>
+						<option value="1006">Market Research Analyst</option>
+						<option value="1007">Laboratory Technician</option>
+						<option value="1008">Data Analyst</option>
+						<option value="1009">Innovation Consultant</option>
+						<option value="1010">Research Analyst</option>
+					</optgroup>
+				</select>
+			</blockquote>
+			
+			<blockquote>
+				<label for="jobPosition">Please Select Your Job Position:</lable><br>
+				<select size="1" name="jobPosition" id="jobPosition">
+					<option value="">Select your option</option>
+					<option value="1">Full-Time</option>
+					<option value="2">Part-Time</option>
+					<option value="3">Remote Job</option>
+					<option value="4">Co-op</option>
+				</select>
+			</blockquote>
+			
+			<blockquote>
+				<label for="startDate" ">Please Choose The Start Date:</label><br>
+				<input type="date" name="startDate" id="startDate">
+			</blockquote>
+			
+			<blockquote>
+				<label for="endDate" ">Please Choose The End Date:</label><br>
+				<input type="date" name="endDate" id="endDate">
+			</blockquote>
+			
+		<input type="Submit" value="Update">
+		<button type="button" id="CancelButton">Cancel Update</button>
+		</form>
+	</main>
+	<!-- end main stuff -->	
+	
+</div>
+	<script>
+	document.addEventListener('DOMContentLoaded', async () => {
+		console.log('Update Work Experience DOM script loaded');
+		
+		const params = new URLSearchParams(window.location.search); // load url to "params" for searching workExpId
+		const workExpID = params.get('workExpId'); // get workExpId from params
+		console.log('workExpID : ', workExpID); // log the workExpID in console
+
+		if (!workExpID) {
+			alert('No Work Experience ID Provided.');
+			return;
+		}
+		
+		// Get target work experience by wrokExp_ID ----------------------/
+		const response = await fetch(`/workExperience/details/${workExpID}`);
+		if (!response.ok) { // error handle
+			alert('Failed to fetch work experience record.');
+			return;
+		}
+		
+		const workExperienceData = await response.json(); // collect data from routes /details/:id and save in workExperienceData
+		
+		// load work experience data from workExpereienceData and display it in related html id ---------------/
+		document.getElementById('workExpID').value = workExperienceData.WorkExp_ID; 
+			console.log('WorkExp_ID value is :', workExperienceData.WorkExp_ID);
+			
+		document.getElementById('companyName').value = workExperienceData.Company;
+			console.log('Company value is :', workExperienceData.Company);
+		
+		document.getElementById('workIndustry').value = workExperienceData.WorkIndustry;
+			console.log('WorkIndustry value is :', workExperienceData.WorkIndustry);
+			
+		document.getElementById('jobCategory').value = workExperienceData.JobCategory_ID;
+			console.log('Institution_ID value is :' , workExperienceData.JobCategory_ID);
+			
+		document.getElementById('jobTitle').value = workExperienceData.JobTitle_ID;
+			console.log('JobTitle_ID :', workExperienceData.JobTitle_ID);
+			
+		document.getElementById('jobPosition').value = workExperienceData.JobPosition_ID;
+			console.log('JobPosition_ID value is:', workExperienceData.JobPosition_ID);
+			
+		document.getElementById('startDate').value = workExperienceData.StartDate;
+			console.log('StartDate value is:', workExperienceData.StartDate);
+			
+		document.getElementById('endDate').value = workExperienceData.EndDate;
+			console.log('EndDate value is :', workExperienceData.EndDate);
+			
+		// Update updated education information to WorkExperience_Table -----------------/		
+		document.getElementById('updateWorkExperienceForm').addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+        
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries()); // Convert form data to an object
+
+        try {
+            const updateResponse = await fetch('/workExperience/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), // Send the form data as JSON
+            });
+
+            if (updateResponse.ok) {
+                alert('Work Experience updated successfully!');
+                window.location.href = 'checkWorkExperience.html'; // Redirect after update
+            } else {
+                alert('Failed to update work Experience.');
+            }
+        } catch (error) {
+            alert('An error occurred while updating the work experience.');
+            console.error(error);
+        }
+    });
+		
+		// Cancel update - Allow user to cancel education history update ------------------/
+		document.getElementById('CancelButton').addEventListener('click', (event) => {
+        window.location.href = 'checkWorkExperience.html';
+		});
+	});	// end DOM
+
+		function showDashBoard() {
+            window.location.href = '/ApplicantDashboard.html';
+        }
+
+        function AddEducationDetail() {
+            window.location.href = '/AddEducationDetail.html';
+        }
+
+        function ViewEducationDetail() {
+            window.location.href = '/CheckEducationDetail.html';
+        }
+
+        function AddWorkExperience() {
+            window.location.href = '/AddWorkExperience.html';
+        }
+
+        function ViewWorkExperience() {
+            window.location.href = '/CheckWorkExperience.html';
+        }
+
+        function AddPreferredJob() {
+            window.location.href = '/AddPreferredJob.html';
+        }
+		
+		function ViewPreferredJob() {
+            window.location.href = '/checkPreferredJob.html';
+        }
+		
+		function ViewApplicantDetail() {
+            window.location.href = '/CheckApplicantDetail.html';
+        }	
+
+	</script>
+</body>
+</html>
