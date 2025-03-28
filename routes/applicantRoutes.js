@@ -59,6 +59,7 @@ router.post('/login', async (req, res) => {
         res.status(500).send({ message: 'Login failed. Please try again.' });
     }
 
+
 });
 
 // Serve the applicant dashboard page
@@ -89,7 +90,7 @@ router.get('/sessionDetails', (req, res) => {
     if (!req.session.applicantID) {
         return res.sendStatus(401);
     }
-    res.json({
+     res.json({
         id: req.session.applicantID,
         name: req.session.applicantFirstName
     });
