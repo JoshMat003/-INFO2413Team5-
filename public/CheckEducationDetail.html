@@ -1,0 +1,218 @@
+<!DOCTYPE html> <!--v4-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View & Update Education Details</title>
+    <!-- google font -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+     <!-- icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	
+	<!-- css file-->
+	<link rel="stylesheet" href="/CSS/ApplicantDashboard.css">
+	
+</head>
+<body>
+<div class="grid-container">
+	<!-- top bar -->
+	<header class="header">
+		<div class="header-right">                 
+			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+		</div>
+	</header>
+	<!-- end top bar -->
+	
+    
+	<!-- menu on the left -->
+	<aside id="sidebar">
+		<div class="sidebar-title">
+			<div class="sidebar-brand">
+				WELCOME <br> <span id="applicantFirstName"></span>!
+			</div>
+			
+		</div>
+
+		<ul class="sidebar-list">
+			<li class="sidebar-list-item" onclick="showDashBoard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+				
+			<li class="sidebar-list-item" onclick="AddEducationDetail()"><span class="material-symbols-outlined">add_ad</span> Add Education Detail</li>
+			<li class="sidebar-list-item" onclick="ViewEducationDetail()"><span class="material-symbols-outlined">post</span> View & Edit Education Detail</li>
+			
+			<li class="sidebar-list-item" onclick="AddWorkExperience()"><span class="material-symbols-outlined">add_ad</span> Add Work Experience</li>
+			<li class="sidebar-list-item" onclick="ViewWorkExperience()"><span class="material-symbols-outlined">post</span> View & Edit Work Experience</li>
+			
+			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
+			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
+							
+			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
+		</ul>
+	</aside>
+	 <!-- end menu on the left -->
+	
+	
+	<!-- main stuff -->
+	<main class="main-container">
+		
+		<!-- home screen -->
+		<div id="dashboard-view">
+			
+			<div class="main-title">
+			<h2>View & Update Education Details</h2>
+			</div>
+			
+		</div>	
+		<!-- end home screen-->	 
+			<table id="educationTable">
+				<thead>
+					<tr>
+						<th>Select</th>
+						<th>Degree</th>
+						<th>Major</th>
+						<th>Institution</th>
+						<th>Graduation Year</th>
+						<th>Update</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="noRecordRow">
+						<td colspan="5">No Record</td>
+					</tr>
+				</tbody>
+			</table>
+    <button id="deleteButton">Delete Selected</button>
+	</main>	
+	<!-- end main stuff -->	
+</div>
+    <script>
+		console.log('Check Education java script has been loaded');
+		
+		// get applicant first name and id from session
+		document.addEventListener('DOMContentLoaded', async () => {
+		const response = await fetch('/applicant/sessionDetails');
+		console.log('Applicant Details Response status:', response.status);
+		
+			if (response.ok) {
+			const applicantDetails = await response.json();
+
+			document.getElementById('applicantFirstName').textContent =applicantDetails.name;
+			} else {
+				console.error('Failed to fetch /education/applicantDetails');
+			}
+		// using applicant ID (stored in session) to query education data from Education_Table
+		const educationResponse = await fetch('/education/educationDetails');
+		const tableBody = document.getElementById('educationTable').querySelector('tbody');
+		const noRecordRow = document.getElementById('noRecordRow');
+		
+			if (educationResponse.ok) {
+				const educationData = await educationResponse.json();
+				tableBody.innerHTML = '';
+				// check if data present, display the data in table format
+				if (educationData.length > 0 ) {
+					educationData.forEach(education => {
+						const row = document.createElement('tr');
+						row.innerHTML = `
+							<td><input type="checkbox" class="educationCheckbox" data-id="${education.Education_ID}"></td>
+							<td>${education.Degree_Name}</td>
+							<td>${education.Major_Name}</td>
+							<td>${education.Institution_Name}</td>
+							<td>${education.GraduationYear}</td>
+							<td><button class="updateButton" data-id="${education.Education_ID}">Update</td>
+						`;
+						tableBody.appendChild(row);
+					});
+				} else {
+					noRecordRow.innerHTML = '<td colspan="6"> No Record Found. </td>';
+				}
+			
+			} else {
+				noRecordRow.innerHTML = '<td colspan="6"> Failed to Fetch Education Details. </td>';
+			} 
+			
+		// Delete education details from the table list
+		document.getElementById('deleteButton').addEventListener('click', async () => {
+        const selectedIds = Array.from(document.querySelectorAll('.educationCheckbox:checked'))
+            .map(checkbox => checkbox.getAttribute('data-id'));
+
+        if (selectedIds.length > 0) {
+            const deleteResponse = await fetch('/education/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ids: selectedIds }),
+            });
+
+            if (deleteResponse.ok) {
+                alert('Selected records deleted successfully.');
+                location.reload(); // Reload the page to update the table
+            } else {
+                alert('Failed to delete selected records.');
+            }
+        } else {
+            alert('Please select at least one record to delete.');
+        }
+		});
+		
+		// Update single education record from the table list
+		tableBody.addEventListener('click', event => {
+        if (event.target.classList.contains('updateButton')) {
+            const educationId = event.target.getAttribute('data-id');
+            window.location.href = `updateEducationDetail.html?educationId=${educationId}`;
+        }
+		});
+	});
+	
+		function showDashBoard() {
+            window.location.href = '/ApplicantDashboard.html';
+        }
+
+        function AddEducationDetail() {
+            window.location.href = '/AddEducationDetail.html';
+        }
+
+        function ViewEducationDetail() {
+            window.location.href = '/CheckEducationDetail.html';
+        }
+
+        function AddWorkExperience() {
+            window.location.href = '/AddWorkExperience.html';
+        }
+
+        function ViewWorkExperience() {
+            window.location.href = '/CheckWorkExperience.html';
+        }
+
+        function AddPreferredJob() {
+            window.location.href = '/AddPreferredJob.html';
+        }
+		
+		function ViewPreferredJob() {
+            window.location.href = '/checkPreferredJob.html';
+        }
+		
+		function ViewApplicantDetail() {
+            window.location.href = '/CheckApplicantDetail.html';
+        }
+	</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

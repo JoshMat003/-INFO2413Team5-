@@ -1,30 +1,71 @@
-<!DOCTYPE html>
+<!DOCTYPE html> <!--v2-->
 <html lang="en">
 <!--Header session -->
 <head>
 	<meta charset="UTF8">
-	<meta name="description" content="">
+	
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Add Education Details</title>
-	<style>
-		body {margin-left:auto;
-			margin-right:auto;
-			width:40%;
-			text-align: center;
-			border: 3px solid black;
-			border-radius: 15px;}
-		
-	</style>
+	 <!-- google font -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+     <!-- icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	
+	<!-- css file-->
+	<link rel="stylesheet" href="/CSS/ApplicantDashboard.css">
 	
 </head>
 
 <!-- body session -->
 <body>
-	<header>
-	<h1>#Add Education Details#</h1>
+<div class="grid-container">
+	<!-- top bar -->
+	<header class="header">
+		<div class="header-right">                 
+			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+		</div>
 	</header>
+	<!-- end top bar -->
 	
-	<main>
+	<!-- menu on the left -->
+		<aside id="sidebar">
+			<div class="sidebar-title">
+				<div class="sidebar-brand">
+					WELCOME <br> <span id="applicantFirstName"></span>!
+				</div>
+				
+			</div>
+
+			<ul class="sidebar-list">
+				<li class="sidebar-list-item" onclick="showDashBoard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+				
+				<li class="sidebar-list-item" onclick="AddEducationDetail()"><span class="material-symbols-outlined">add_ad</span> Add Education Detail</li>
+				<li class="sidebar-list-item" onclick="ViewEducationDetail()"><span class="material-symbols-outlined">post</span> View & Edit Education Detail</li>
+				
+				<li class="sidebar-list-item" onclick="AddWorkExperience()"><span class="material-symbols-outlined">add_ad</span> Add Work Experience</li>
+				<li class="sidebar-list-item" onclick="ViewWorkExperience()"><span class="material-symbols-outlined">post</span> View & Edit Work Experience</li>
+				
+				<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
+				<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
+								
+				<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
+			</ul>
+		</aside>
+    <!-- end menu on the left -->
+	
+	<!-- main stuff -->
+	<main class="main-container">
+		
+		<!-- home screen -->
+		<div id="dashboard-view">
+			
+			<div class="main-title">
+			<h2># Add Education Details</h2>
+			</div>
+				
+		<!-- end home screen-->	
+		
 		
 		<!--form to store user education details
 		The post should generate a new Education_ID for each record.
@@ -121,7 +162,7 @@
 					<option value="34">Wilfrid Laurier University</option>
 					<option value="35">Ontario Tech University</option>
 					<option value="36">École Polytechnique de Montréal</option>
-					<option value="37">Bishop's University</option>
+					<option value="37">Bishop’s University</option>
 					<option value="38">University of Winnipeg</option>
 					<option value="39">Algoma University</option>
 					<option value="40">George Brown College</option>
@@ -289,29 +330,85 @@
 			<input type="Submit">
 		</form>
 		
-	</main>
+	</main>	
+	<!-- end main stuff -->	
+		
+</div>
 	<script>
-	document.getElementByID('EducationForm').addEventListener('submit', async (event) => {
-		event.preventDefault(); // prevent default form submission
-		
-		const formData = new FormData(event.target);
-		const data = object.formEntries(formData);
-		
-		const response = await fetch('/education/submit', {
-			method: 'Post',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(data),
-		});
-		
-		if (response.ok) {
-			alert('Educationdetails saved successfully!');
-			event.taregt.reset(); // reset the form
-		} else {
-			alert('Failed to save education details.');
-		}
+	document.addEventListener('DOMContentLoaded', async () => {
+			const response = await fetch('/applicant/sessionDetails');
+			console.log('Response status:', response.status);
+			if (response.ok) {
+				const applicantDetails = await response.json();
+				console.log('Fetched data:', applicantDetails);
+				document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+			} else {
+				 console.error('Failed to fetch applicant details');
+			}	
+	
+	
+	document.getElementById('educationForm').addEventListener('submit', async (event) => {
+			event.preventDefault(); // prevent default form submission
+			
+			const formData = new FormData(event.target);
+			const data = Object.fromEntries(formData.entries());
+			
+			try{
+					const submitResponse = await fetch('/education/submit', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(data),
+				
+				});
+					
+				if (submitResponse.ok) {
+					alert('Educationdetails saved successfully!');
+					window.location.href = 'CheckEducationDetail.html'
+				} else {
+					alert('Failed to save education details.');
+					window.location.href = 'AddEducationDetail.html'
+				}
+			} catch (error) {
+				alert('An error occured while updating the education details.');
+				console.error(error);
+			}
+		});	
 	});
+	
+		function showDashBoard() {
+            window.location.href = '/ApplicantDashboard.html';
+        }
+
+        function AddEducationDetail() {
+            window.location.href = '/AddEducationDetail.html';
+        }
+
+        function ViewEducationDetail() {
+            window.location.href = '/CheckEducationDetail.html';
+        }
+
+        function AddWorkExperience() {
+            window.location.href = '/AddWorkExperience.html';
+        }
+
+        function ViewWorkExperience() {
+            window.location.href = '/CheckWorkExperience.html';
+        }
+
+        function AddPreferredJob() {
+            window.location.href = '/AddPreferredJob.html';
+        }
+		
+		function ViewPreferredJob() {
+            window.location.href = '/checkPreferredJob.html';
+        }
+		
+		function ViewApplicantDetail() {
+            window.location.href = '/CheckApplicantDetail.html';
+        }
+	
 	</script>
 </body>
 
