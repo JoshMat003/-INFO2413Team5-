@@ -4,23 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
-	<script>
-		console.log('dashboard.js script has been loaded.');
-
-		document.addEventListener('DOMContentLoaded', async () => {
-			const response = await fetch('/applicant/dashboard/details');
-			console.log('Response status:', response.status);
-			if (response.ok) {
-				const applicantDetails = await response.json();
-				console.log('Fetched data:', applicantDetails);
-				document.getElementById('applicantFirstName').textContent = applicantDetails.name;
-				document.getElementById('applicantID').innerHTML = applicantDetails.id; 
-			} else {
-				 console.error('Failed to fetch applicant details');
-			}
-		});
-
-	</script>	
+	<link rel="stylesheet" href="/CSS/applicantDashboard.css">	
+	
 </head>
 <body>
     <h1>Welcome, <span id="applicantFirstName"></span>!</h1>
@@ -35,5 +20,15 @@
 	<a href="/CheckEducationDetail_v2.html"><b>Check Education Detail</br></a><br><br>
 	<a href="/CheckWorkExperience_v1.html"><b>Check Work Experience</br></a><br><br>
 	<a href="/CheckPreferredJob_v1.html"><b>Check Preferred Job</br></a><br><br>
+
+    <!-- Add this where you want the button to appear -->
+    <button onclick="window.location.href='/applicant/job-posts'" class="job-posts-button">
+        <span class="material-symbols-outlined">work</span>
+        View Job Posts
+    </button>
+	<script src="/js/applicantDashboard.js"></script>
+		
+
+	</script>
 </body>
 </html>
