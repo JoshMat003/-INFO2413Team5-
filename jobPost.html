@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Jobs - HireHub</title>
+    
+    <!-- google font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    <!-- icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    
+    <!-- css files -->
+    <link rel="stylesheet" href="/CSS/HRDashboard.css">
+    <link rel="stylesheet" href="/CSS/jobForm.css">
+</head>
+<body>
+    <div class="grid-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="menu-icon">
+                <span class="material-symbols-outlined">menu</span>
+            </div>
+            <div class="header-right">
+                <button onclick="window.location.href='/applicant/dashboard'" class="back-button">
+                    <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-container">
+            <div class="main-title">
+                <h2>Available Job Posts</h2>
+            </div>
+            <div id="job-posts-container">
+                <!-- Job posts will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // load job posts when page loads
+        document.addEventListener('DOMContentLoaded', loadJobPosts);
+
+        // fetch and display jobs
+        async function loadJobPosts() {
+            try {
+                const response = await fetch('/applicant/available-jobs');
+                const jobPosts = await response.json();
+                
+                const container = document.getElementById('job-posts-container');
+                container.innerHTML = '';
+                
+                if (jobPosts.length === 0) {
+                    container.innerHTML = '<p>No job posts available.</p>';
+                    return;
+                }
+
+                jobPosts.forEach(post => {
+                    const dueDate = new Date(post.application_due_date).toLocaleDateString();
+                    const postCard = document.createElement('div');
+                    postCard.className = 'job-post-card';
+                    postCard.innerHTML = `
+                        <h3>${post.job_title}</h3>
+                        <p><strong>Position:</strong> ${post.job_position}</p>
+                        <p><strong>Location:</strong> ${post.city}, ${post.province}</p>
+                        <p><strong>Salary:</strong> $${post.annual_salary.toLocaleString()}</p>
+                        <p><strong>Due Date:</strong> ${dueDate}</p>
+                        <p><strong>Education Required:</strong> ${post.minimum_education || 'Not specified'}</p>
+                        <p><strong>Experience Required:</strong> ${formatExperience(post.required_experience)}</p>
+                        <p><strong>Description:</strong> ${post.job_post_description}</p>
+                        <button onclick="applyForJob(${post.job_id})" class="apply-button">
+                            Apply Now
+                        </button>
+                    `;
+                    container.appendChild(postCard);
+                });
+            } catch (error) {
+                console.error('Error loading job posts:', error);
+                document.getElementById('job-posts-container').innerHTML = 
+                    '<p>Error loading job posts. Please try again later.</p>';
+            }
+        }
+
+        // format experience level
+        function formatExperience(experience) {
+            if (!experience) return 'Not specified';
+            
+            const experienceMap = {
+                'entry_level': 'Entry Level (0-2 years)',
+                'intermediate': 'Intermediate (3-5 years)',
+                'senior': 'Senior (6+ years)',
+                'expert': 'Expert (10+ years)'
+            };
+            
+            return experienceMap[experience.toLowerCase()] || experience;
+        }
+
+        // handle job application
+        async function applyForJob(jobId) {
+            try {
+                const response = await fetch('/applicant/apply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ jobId })
+                });
+
+                if (response.ok) {
+                    alert('Application submitted successfully!');
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to submit application');
+                }
+            } catch (error) {
+                console.error('Error applying for job:', error);
+                alert('Error submitting application: ' + error.message);
+            }
+        }
+    </script>
+
+    <style>
+        .job-post-card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .apply-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .apply-button:hover {
+            background-color: #45a049;
+        }
+        
+        .back-button {
+            background-color: #666;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-button:hover {
+            background-color: #555;
+        }
+
+        #job-posts-container {
+            padding: 20px;
+        }
+
+        .job-post-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .job-post-card p {
+            margin: 8px 0;
+            color: #666;
+        }
+
+        .job-post-card strong {
+            color: #333;
+        }
+    </style>
+</body>
+</html> 

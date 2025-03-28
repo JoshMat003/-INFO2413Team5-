@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db'); // Import db.js from up one folder././db.js
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 // function to generate the new or next Applicant_ID
 async function generateApplicantID() {
@@ -134,6 +135,73 @@ router.post('/register', async (req, res) => {
 // Serve login fail page
 router.get('/loginFail', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'loginFail.html'));
+});
+
+// serve the job posts page
+router.get('/job-posts', (req, res) => {
+    if (!req.session.applicantID) {
+        return res.redirect('/ApplicantLogin_v1.html');
+    }
+    res.sendFile(path.join(__dirname, '../public/jobPost.html'));
+});
+
+// get available jobs
+router.get('/available-jobs', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                job_id,
+                job_title,
+                job_position,
+                annual_salary,
+                city,
+                province,
+                job_post_description,
+                application_due_date,
+                minimum_education,
+                required_experience
+            FROM jobpost_table
+            WHERE application_due_date > CURRENT_DATE()
+            ORDER BY application_due_date ASC`;
+        
+        const results = await db.query(query);
+        res.json(results);
+    } catch (error) {
+        console.error('Error fetching available jobs:', error);
+        res.status(500).json({ error: 'Failed to fetch available jobs' });
+    }
+});
+
+// handle job applications
+router.post('/apply', async (req, res) => {
+    if (!req.session.applicantID) {
+        return res.status(401).json({ error: 'Please log in to apply' });
+    }
+
+    const { jobId } = req.body;
+    
+    try {
+        // Check if already applied
+        const checkQuery = `
+            SELECT * FROM job_applications 
+            WHERE applicant_id = ? AND job_id = ?`;
+        const existing = await db.query(checkQuery, [req.session.applicantID, jobId]);
+        
+        if (existing.length > 0) {
+            return res.status(400).json({ error: 'You have already applied for this job' });
+        }
+
+        // Insert new application
+        const query = `
+            INSERT INTO job_applications (applicant_id, job_id, application_date, status)
+            VALUES (?, ?, CURRENT_DATE(), 'pending')`;
+        
+        await db.query(query, [req.session.applicantID, jobId]);
+        res.json({ message: 'Application submitted successfully' });
+    } catch (error) {
+        console.error('Error submitting application:', error);
+        res.status(500).json({ error: 'Failed to submit application' });
+    }
 });
 
 module.exports = router;

@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../db');
 const path = require('path');
 
-// check hr login info
+// check login info
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     
@@ -26,9 +26,9 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// save new job post
+// save new job
 router.post('/create-job-post', async (req, res) => {
-    try {
+    try { 
         const {
             job_title,
             job_category_id,
@@ -78,7 +78,7 @@ router.post('/create-job-post', async (req, res) => {
         const result = await db.query(query, values);
         console.log('Insert result:', result);
 
-        // check if it worked
+        
         if (result && result.affectedRows > 0) {
             res.status(201).json({
                 message: 'Job post created successfully',
@@ -99,16 +99,33 @@ router.post('/create-job-post', async (req, res) => {
 // get all jobs
 router.get('/job-posts', async (req, res) => {
     try {
-        const query = 'SELECT * FROM JobPost_Table ORDER BY application_due_date DESC';
-        const result = await db.query(query);
-        res.json(result);
+        const query = `
+            SELECT 
+                job_id,
+                job_title,
+                job_position,
+                annual_salary,
+                city,
+                province,
+                job_post_description,
+                application_due_date,
+                contact_email,
+                minimum_education,
+                required_experience
+            FROM jobpost_table
+            ORDER BY application_due_date DESC`;
+        
+        console.log('Fetching job posts...');
+        const results = await db.query(query);
+        console.log('Job posts results:', results);
+        res.json(results);
     } catch (error) {
         console.error('Error fetching job posts:', error);
         res.status(500).json({ error: 'Failed to fetch job posts' });
     }
 });
 
-// show dashboard page
+// show hr dashboard
 router.get('/dashboard', (req, res) => {
     // make sure user is hr
     if (req.session.userType === 'hr') {
@@ -127,6 +144,122 @@ router.get('/session-info', (req, res) => {
         });
     } else {
         res.sendStatus(401);
+    }
+});
+
+// get one job
+router.get('/job-posts/:id', async (req, res) => {
+    try {
+        const result = await db.query(
+            'SELECT * FROM jobpost_table WHERE job_id = ?',
+            [req.params.id]
+        );
+        
+        if (result.length > 0) {
+            res.json(result[0]);
+        } else {
+            res.status(404).json({ error: 'Job post not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching job post:', error);
+        res.status(500).json({ error: 'Failed to fetch job post' });
+    }
+});
+
+// update job
+router.put('/job-posts/:id', async (req, res) => {
+    try {
+        const {
+            job_title,
+            job_category_id,
+            job_position,
+            annual_salary,
+            province,
+            city,
+            job_post_description,
+            application_due_date,
+            contact_email,
+            minimum_education,
+            required_experience
+        } = req.body;
+
+        const query = `
+            UPDATE jobpost_table 
+            SET job_title = ?,
+                job_category_id = ?,
+                job_position = ?,
+                annual_salary = ?,
+                province = ?,
+                city = ?,
+                job_post_description = ?,
+                application_due_date = ?,
+                contact_email = ?,
+                minimum_education = ?,
+                required_experience = ?
+            WHERE job_id = ?
+        `;
+
+        const values = [
+            job_title,
+            job_category_id,
+            job_position,
+            annual_salary,
+            province,
+            city,
+            job_post_description,
+            application_due_date,
+            contact_email,
+            minimum_education,
+            required_experience,
+            req.params.id
+        ];
+
+        const result = await db.query(query, values);
+
+        if (result.affectedRows > 0) {
+            res.json({ message: 'Job post updated successfully' });
+        } else {
+            res.status(404).json({ error: 'Job post not found' });
+        }
+    } catch (error) {
+        console.error('Error updating job post:', error);
+        res.status(500).json({ error: 'Failed' });
+    }
+});
+
+// log out user
+router.get('/signout', (req, res) => {
+    // Clear the session
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            res.status(500).send('Error signing out');
+            return;
+        }
+        // Redirect to signed out page
+        res.redirect('/signedOut.html');
+    });
+});
+
+// get applicant list
+router.get('/applicants', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                Applicant_ID,
+                Applicant_FirstName,
+                Applicant_LastName,
+                Applicant_Email,
+                Applicant_PhoneNum,
+                Applicant_DateOfBirth
+            FROM applicant_table 
+            ORDER BY Applicant_LastName, Applicant_FirstName`;
+        
+        const result = await db.query(query);
+        res.json(result);
+    } catch (error) {
+        console.error('Error fetching applicants:', error);
+        res.status(500).json({ error: 'Failed to fetch applicants' });
     }
 });
 
