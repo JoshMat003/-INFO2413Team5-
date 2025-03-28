@@ -28,7 +28,7 @@ router.post('/submit', async(req, res) => {
 		const sql = `INSERT INTO Education_Table (Education_ID, Applicant_ID, Degree_ID, Major_ID, Institution_ID, GraduationYear) VALUES (?, ?, ?, ?, ?, ?)`;;
 		await db.query(sql, [educationID, applicantID, degree, major, institution, graduationYear]);
 		
-		res.status(200).send('Education Details Added Successfully');
+		res.status(204).send(); // send respond;
 	} catch (error) {
 		console.error('Error inserting data:', error);
 		res.status(500).send('Error saving data');
@@ -77,6 +77,55 @@ router.post('/delete', async (req, res) => {
         console.error('Error deleting education records:', error);
         res.status(500).send('Internal Server Error');
     }
+});
+
+// router handle get education details with education_ID for updateEducationDetail.html
+router.get('/details/:id', async (req, res) => {
+	if (!req.session.applicantID) {
+		return res.status(401).send('Unauthorized access to update detail');
+	}
+	
+	const educationID = req.params.id;
+	
+	try {
+		const sql = ` SELECT Education_ID, Degree_ID, Major_ID, Institution_ID, GraduationYear from Education_Table 
+		WHERE Education_ID = ? AND Applicant_ID = ? 
+		`;
+		
+		const result = await db.query(sql, [educationID, req.session.applicantID]);
+		
+		if (result.length > 0 ) {
+			res.json(result[0]);
+		} else {
+			res.status(404).send('Education record not found');
+		}
+	} catch (error) { 
+		consloe.error('Error fetching education details for ID:', educationID, error);
+		res.status(500).send('Internal Server Error');
+	}	
+});
+
+// router handle post updated education details to Education_Table from updateEducationDetail.html
+router.post('/update', async (req, res) => {
+	if (!req.session.applicantID) {
+		return res.status(401).send('Unauthorized');
+	}
+	
+	const { educationID, degree, major, institution, graduationYear } = req.body;
+	
+	try {
+		const sql = `UPDATE Education_Table
+		SET Degree_ID = ?, Major_ID = ?, Institution_ID = ?, GraduationYear = ?
+		WHERE Education_ID = ? AND Applicant_ID = ?
+		`;
+		
+		await db.query(sql, [degree, major, institution, graduationYear, educationID, req.session.applicantID]);
+		res.status(204).send(); 
+	} catch (error) {
+		console.error('Error updating education details: ', error);
+		res.status(500).send('Internal Server Error');
+	}
+		
 });
 
 module.exports =router;
