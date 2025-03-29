@@ -96,6 +96,53 @@ router.get('/sessionDetails', (req, res) => {
     });
 });
 
+// router handle get applicant details with applicant_ID for CheckApplicantDetail.html
+router.get('/details', async (req, res) => {
+	if (!req.session.applicantID) {
+		return res.status(401).send('Unauthorized access to update detail');
+	}
+	
+	
+	
+	try {
+		const sql = `SELECT Applicant_ID, Applicant_Firstname, Applicant_LastName, DATE_FORMAT(Applicant_DateOfBirth, '%Y-%m-%d') AS Applicant_DateOfBirth, Applicant_Email, Applicant_PhoneNum FROM Applicant_Table 
+		WHERE Applicant_ID = ? 
+		`;
+		
+		const result = await db.query(sql, [req.session.applicantID]);
+		
+		if (result.length > 0 ) {
+			res.json(result[0]);
+		} else {
+			res.status(404).send('Education record not found');
+		}
+	} catch (error) { 
+		consloe.error('Error fetching education details for ID:', educationID, error);
+		res.status(500).send('Internal Server Error');
+	}	
+});
+
+// router handle update applicant details with applicant_ID for UpdateApplicantDetail.html
+router.post('/updateApplicantDetail', async (req, res) => {
+if (!req.session.applicantID) {
+		return res.status(401).send('Unauthorized');
+	}
+	
+	const { firstName, lastName, dateOfBirth, email, phoneNum } = req.body;
+
+	try {
+		const sql = `UPDATE Applicant_Table
+		SET Applicant_FirstName = ?, Applicant_LastName = ?, Applicant_DateOfBirth = ?, Applicant_Email = ?, Applicant_PhoneNum = ? WHERE Applicant_ID = ?
+		`;
+		
+		await db.query(sql, [firstName, lastName, dateOfBirth, email, phoneNum, req.session.applicantID]);
+		res.status(204).send(); // reply response to updateWorkExperience.html
+	} catch (error) {
+		console.error('Error update applicant deatils : ', error);
+		res.status(500).send('Internal Server Error');
+	}
+});	
+
 // router handle applicant registration
 router.post('/register', async (req, res) => {
 	const { firstName, lastName, dateOfBirth, email, phoneNum, password } = req.body;
