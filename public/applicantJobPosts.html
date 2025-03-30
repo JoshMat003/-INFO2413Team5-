@@ -184,6 +184,19 @@
 			}
 		});
 		
+		function signOut() {
+			
+			sessionStorage.clear(); // clear client session
+			
+			// check clear success or not then redirect to related page
+			if (sessionStorage.length === 0) {
+			window.location.href = '/signedOut.html'; // Redirect to signedOut.html if clearing was successful
+		} else {
+			console.error('Failed to clear session storage.');
+		}
+			
+		}
+		
 		function showDashBoard() {
             window.location.href = '/ApplicantDashboard.html';
         }
