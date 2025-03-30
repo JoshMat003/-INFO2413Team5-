@@ -47,7 +47,8 @@
 			
 			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
 			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
-							
+			
+			<li class="sidebar-list-item" onclick="ViewJobPost()"><span class="material-symbols-outlined">work</span> View & Apply Job Post</li>				
 			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
 		</ul>
 	</aside>
@@ -204,6 +205,10 @@
 	function ViewPreferredJob() {
 		window.location.href = '/checkPreferredJob.html';
 	}
+	
+	function ViewJobPost() {
+            window.location.href = '/ApplicantJobPosts.html';
+    }
 	
 	function ViewApplicantDetail() {
 		window.location.href = '/CheckApplicantDetail.html';

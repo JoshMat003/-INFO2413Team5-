@@ -46,7 +46,8 @@
 			
 			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
 			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
-							
+			
+			<li class="sidebar-list-item" onclick="ViewJobPost()"><span class="material-symbols-outlined">work</span> View & Apply Job Post</li>				
 			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
 		</ul>
 	</aside>
@@ -150,6 +151,19 @@
 		});
 	});
 	
+		function signOut() {
+			
+			sessionStorage.clear(); // clear client session
+			
+			// check clear success or not then redirect to related page
+			if (sessionStorage.length === 0) {
+			window.location.href = '/signedOut.html'; // Redirect to signedOut.html if clearing was successful
+		} else {
+			console.error('Failed to clear session storage.');
+		}
+			
+		}
+	
 		function showDashBoard() {
             window.location.href = '/ApplicantDashboard.html';
         }
@@ -176,6 +190,10 @@
 		
 		function ViewPreferredJob() {
             window.location.href = '/CheckPreferredJob.html';
+        }
+		
+		function ViewJobPost() {
+            window.location.href = '/ApplicantJobPosts.html';
         }
 		
 		function ViewApplicantDetail() {
