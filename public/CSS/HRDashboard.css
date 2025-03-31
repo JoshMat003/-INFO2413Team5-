@@ -1,0 +1,180 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #1d2634;
+    color: #9e9ea4;
+    font-family: "Monserrat", sans-serif;
+}   
+
+.material-icons-outlined {
+    vertical-align: middle;
+    line-height: 1px;
+    font-size: 35px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: 0.2fr 3fr;
+    grid-template-areas:
+    "sidebar header"
+    "sidebar main";
+    height: 100vh;
+}
+
+/*--------- Header -------*/
+.header{
+    grid-area: header;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px 0 30px;
+    box-shadow: 0 6px 7px -3px rgba(0, 0, 0, 0.35);
+}
+
+/* Style for the menu icon on the left */
+.menu-icon {
+    display: none;  
+}
+
+/* Style for the icons on the right side of header */
+.header-right {
+    display: flex;          /* Make icons appear in a row */
+    align-items: center;    /* Center icons vertically */
+    gap: 20px;             /* Add space between icons */
+    margin-left: auto;     /* Push everything to the right */
+}
+
+/* Make the header icons look clickable */
+.header-right span {
+    cursor: pointer;       /* Show pointer cursor on hover */
+    padding: 5px;         /* Add some padding around icons */
+}
+
+/* Add hover effect to header icons */
+.header-right span:hover {
+    background-color: rgba(255, 255, 255, 0.1);  /* Slight highlight on hover */
+    border-radius: 50%;    /* Make the highlight circular */
+}
+
+/*--------- Side bar -------*/
+#sidebar {
+    grid-area: sidebar;
+    height: 100%;
+    background-color: #263043;
+    overflow-y: auto;
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    width: 260px;
+}
+
+.sidebar-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 30px 30px 30px;
+    margin-bottom: 30px;
+}
+
+.sidebar-title > span {
+    display: none;
+}
+
+.sidebar-brand {
+    margin-top: 15px;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 0 30px;
+}
+
+.sidebar-list {
+    padding: 0;
+    margin-top: 30px;
+    list-style-type: none;
+}
+
+.sidebar-list-item {
+    padding: 20px 30px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.sidebar-list-item span {
+    font-size: 20px;
+}
+
+.sidebar-list-item:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+}
+
+.sidebar-responsive { /* Hides the sidebar when the screen is small */
+    display: incline !important; /* added !important to override the display: none; */
+    position: absolute;
+    z-index: 12 !important;
+}
+
+/*--------- MAIN -------*/
+.main-container {
+    grid-area: main;
+    overflow-y: auto;
+    padding: 20px 20px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.main-title {
+    display:flex;
+    justify-content: space-between;
+}
+
+.main-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 25px;
+    border-radius: 5px;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transform: translate(-5px, -5px); /* Moves diagonally: right (5px) & up (-5px) */
+    box-shadow: 5px 10px 20px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+}
+
+.card:first-child {
+    background-color: #2962ff;
+}
+
+.card:nth-child(2) {
+    background-color: #ff6d00;
+}
+
+.card:nth-child(3) {
+    background-color: #2e7d32;
+}
+
+.card:nth-child(4) {
+    background-color: #450000;
+}
+
+.card-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-inner > .material-icons-outlined {
+    font-size: 45px;
+}

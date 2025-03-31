@@ -1,0 +1,232 @@
+        .job-post-card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .apply-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .apply-button:hover {
+            background-color: #45a049;
+        }
+        
+        .back-button {
+            background-color: #666;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-button:hover {
+            background-color: #555;
+        }
+
+        #job-posts-container {
+            padding: 40px;
+        }
+
+        .job-post-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .job-post-card p {
+            margin: 8px 0;
+            color: #666;
+        }
+
+        .job-post-card strong {
+            color: #333;
+        }
+
+        .center-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 50vh;
+        }
+
+        .view-jobs-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .jobTitle {
+
+            max-width: 50em;
+        }
+
+        .view-jobs-button:hover {
+            background-color: #45a049;
+        }
+
+        .reset-button-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .reset-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #666;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background-color: #555;
+        }
+
+        .search-form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px auto;
+            width: 70%;
+            max-width: 900px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .form-field label {
+            display: block;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .form-field input,
+        .form-field select {
+            width: 100%;
+            max-width: 250px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #f8f9fa;
+        }
+
+        .salary-inputs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 250px;
+        }
+
+        .salary-inputs input {
+            width: 45%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #f8f9fa;
+        }
+
+        .salary-inputs span {
+            color: #333;
+        }
+
+        .center-button {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .application-card {
+            background-color: #1a2035;
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .application-details {
+            background: #333;
+            color: white;
+            display: grid;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .applicant-info p {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .application-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .status-button, .accept-button, .reject-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .status-button {
+            background-color: #ffd700;
+            color: black;
+        }
+
+        .accept-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .reject-button {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .status-button:hover { background-color: #ffed4a; }
+        .accept-button:hover { background-color: #45a049; }
+        .reject-button:hover { background-color: #da190b; }

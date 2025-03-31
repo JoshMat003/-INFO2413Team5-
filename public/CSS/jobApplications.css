@@ -1,0 +1,98 @@
+.applications-container {
+    background-color: #1d2634;
+    min-height: 100vh;
+    padding: 20px;
+    color: white;
+}
+
+.application-card {
+    background-color: #263043;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    padding: 20px;
+    color: white;
+}
+
+.application-title {
+    color: #2962ff;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.application-details {
+    background-color: #263043;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: white;
+}
+
+.application-details h3 {
+    margin-bottom: 15px;
+    color: #2962ff;
+}
+
+.application-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    color: white;
+}
+
+.application-grid p {
+    margin: 8px 0;
+    color: white;
+}
+
+.application-grid strong {
+    font-weight: 600;
+    color: #2962ff;
+}
+
+.application-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.action-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.review-button {
+    background: #ffd700;
+    color: black;
+}
+
+.accept-button {
+    background: #4CAF50;
+    color: white;
+}
+
+.reject-button {
+    background: #f44336;
+    color: white;
+}
+
+.back-to-dashboard {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #2962ff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.back-to-dashboard:hover {
+    background-color: #1e4bd8;
+} 
