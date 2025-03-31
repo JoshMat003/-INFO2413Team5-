@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+     <!-- Google Fonts -->
+     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+     
+     <!-- CSS -->
+     <link rel="stylesheet" href="../CSS/HRDashboard.css">
+     <style>
+         /* Job Post Form Styles */
+         .job-post-form, #hr-account-form, #user-account-form, #generate-reports-form, #view-account-form, #view-job-form{
+    background-color: #263043;
+    padding: 20px;
+    border-radius: 10px;
+    width: 45%; /* Adjusted to fit side by side */
+    box-sizing: border-box;
+    display: none; /* Initially hidden */
+}
+
+/* Form Layout */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: white;
+}
+
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #1d2634;
+    color: white;
+}
+
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.submit-button {
+    background-color: #2962ff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px; /* Space between button and form fields */
+}
+
+.submit-button:hover {
+    background-color: #1e4bd8;
+}
+
+.back-button {
+    background-color: #2962ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 20px; /* Add space from other elements */
+}
+
+.back-button:hover {
+    background-color: #1e4bd8;
+}
+
+/* Improved Layout for Dashboard and Forms */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    padding: 20px;
+}
+
+.card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+    padding: 20px;
+    background-color: #2f3b48;
+    border-radius: 10px;
+    width: 250px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05); /* Add hover effect */
+}
+
+.card-inner h3 {
+    color: white;
+    margin-bottom: 10px;
+}
+
+.card-inner span {
+    font-size: 30px;
+    color: white;
+}
+
+.main-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 20px; /* Space between cards and other content */
+}
+
+/* Dashboard Buttons */
+.dashboard-buttons {
+    display: flex;
+    gap: 15px; /* Add space between the buttons */
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+
+}
+.submit-button {
+  /* Creates blue button */
+  background-color: blue;
+  color: white;
+}
+
+.delete-button {
+  /* Creates red button */ 
+  background-color: red;
+  color: white;
+}
+        </style>
+</head>
+<body>
+    <div class="grid-container">
+
+        <!-- Top Bar -->
+        <header class="header">
+            <div class="menu-icon" onclick="openSidebar()">
+                <span class="material-symbols-outlined">menu</span>
+            </div>
+            <div class="header-right">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="material-symbols-outlined">mail</span>
+                <span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+            </div>
+        </header>
+        <!-- End Top Bar -->
+
+
+        <!-- Sidebar Menu the functions are not yet designed-->
+        <aside id="sidebar">
+            <div class="sidebar-title">
+                <div class="sidebar-brand">
+                   Administrator
+                </div>
+                <span class="material-symbols-outlined" onclick="closeSidebar()">close</span>
+            </div>
+
+            <ul class="sidebar-list">
+                <li class="sidebar-list-item" onclick="showDashboard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+                <li class="sidebar-list-item" onclick="currentJobPosts()"><span class="material-symbols-outlined">post</span> View Job Posts</li>
+                <li class="sidebar-list-item" onclick="currentUsers()"><span class="material-symbols-outlined">person</span> Current Users</li>
+                <li class="sidebar-list-item"><span class="material-symbols-outlined">settings</span> Profile Settings</li>
+            </ul>
+
+        </aside>
+        <!-- End Sidebar -->
+
+        <!-- Main Content -->
+        <main class="main-container">
+            <!-- Sidebar Forms -->
+
+            <form id="view-job-form">
+                <h2>Current Job Postings</h2>
+                <div class="viewPostings">
+                    <button type="submit" class="submit-button">Find Postings</button>
+                    <div class="delete-section">
+                        <input type="number" id="jobIdToDelete" placeholder="Enter Job ID to delete">
+                        <button type="button" id="deleteButton" class="delete-button">Delete Posting</button>
+                    </div>
+                    <br>
+                    <button type="button" onclick="showDashboard()" class="back-button">
+                        <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                    </button>
+                </div>
+                <div id="jobPostingsContainer"></div>
+            </form>
+
+            <form id="view-account-form">
+                <h2>Current Users</h2>
+                <select name="viewUserOptions" required>
+                    <option value="">-- View Current User Type --</option>
+                    <option value="Applicants">Applicants</option>
+                    <option value="Human Resources">Human Resources</option>
+                </select>
+                <br> 
+                <button type="submit" class="submit-button">Find Account</button>
+                <!-- Add this container for results -->
+                <div id="dataContainer" style="margin-top: 20px; color: white;"></div>
+
+                <button onclick="showDashboard()" class="back-button">
+                    <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                </button>
+            </form>
+
+
+            <!-- Dashboard View -->
+            <div id="dashboard-view">
+                <div class="main-title">
+                    <h2>DASHBOARD</h2>
+                </div>
+                <div class="main-cards">
+                    <div class="card" onclick="showHRAccountForm()">
+                        <div class="card-inner">
+                            <h3>Create HR Accounts</h3> 
+                            <span class="material-symbols-outlined">add_ad</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card" onclick= "deleteUserForm()">
+                        <div class="card-inner">
+                            <h3>User Accounts</h3>
+                            <span class="material-symbols-outlined">post</span>
+                        </div>
+                    </div> 
+
+                    <div class="card" onclick="showJobPostForm()">
+                        <div class="card-inner">
+                            <h3>Job Categories</h3>
+                            <span class="material-symbols-outlined">diversity_3</span>
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="generateReportsForm()">
+                        <div class="card-inner">
+                            <h3>Generate Summary Reports</h3> 
+                            <span class="material-symbols-outlined">settings</span>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+
+            <!-- Job Posts View -->
+            <div id="job-posts-view" style="display: none;">
+                <div class="main-title">
+                    <h2>JOB POSTS</h2>
+                    <button onclick="showDashboard()" class="back-button">
+                        <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <!-- Job Post Form -->
+            <div id="job-post-form" class="job-post-form">
+                <div class="main-title">
+                    <h2>Manage Job Categories</h2>
+                </div>
+                <!-- Remove the form element and use a div instead -->
+                <div class="category-form">
+                    <div class="form-group">
+                        <label for="jobCategory">Job Category</label>
+                        <input type="text" id="jobCategory" name="jobCategory" placeholder="Enter a job category" required>
+                    </div>
+                    
+                    <button id="createButton" class="submit-button">Create Category</button>
+                    <button id="deleteButton" class="delete-button">Delete Category</button>
+                </div>
+                <button onclick="showDashboard()" class="back-button">
+                    <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                </button>
+            </div>
+
+            <!-- HR Account Form -->
+            <div id="hr-account-form" class="container" style="display: none;" >   
+                <h2>Create HR Account</h2>
+                <form id="hrAccountForm" onsubmit="return handleHrAccountForm(event)"> <!-- uses method for validation -->
+                    <input type="text" id="firstName" name="firstName" placeholder="Enter First Name" required>
+                    <input type="text" id="lastName" name="lastName" placeholder="Enter Last Name" required>
+                    <input type="text" id="number" name="number" placeholder="Enter Phone Number" required>
+                    <input type="email" id="email" name="email" placeholder="Enter Email" required>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required>
+                    <br> 
+                    <button type="submit" class="submit-button">Create Account</button>
+                </form> 
+                <button onclick="showDashboard()" class="back-button">
+                    <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                </button>
+            </div>
+
+            <!-- User Account Delete -->
+            <div id="user-account-form" class="container" style="display: none;">
+                <h2>User Accounts</h2>
+                <form id="deleteUserForm" onsubmit="return validUserDeleteForm(event)">
+                    <input type="email" id="userEmail" name="email" placeholder="Enter User Email" required>
+                    <input type="password" id="userPassword" name="password" placeholder="Enter User Password" required>
+                    <br>
+                    <button type="submit" class="submit-button" > Delete Account</button>
+                </form> 
+
+
+                <button onclick="showDashboard()" class="back-button">
+                    <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                </button>
+
+
+            </div>
+
+            <!-- Generate Monthly Reports -->
+            <div id="generate-reports-form" class="container" style="display: none;">
+                <h2>Generate Reports</h2>
+                <form id="reportForm" onsubmit="return validCredentials()">
+                    <!-- Time Period Selection -->
+                    <div class="form-group">
+                        <label for="reportPeriod">Select Time Period</label>
+                        <select id="reportPeriod" name="reportPeriod" required>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Report Type Selection -->
+                    <div class="form-group">
+                        <label for="reportType">Select Report Type</label>
+                        <select id="reportType" name="reportType" required>
+                            <option value="summary">Summary Report</option>
+                            <option value="qualifiedCandidates">Summary of Qualified Candidates</option>
+                        </select>
+                    </div>
+            
+                    <!-- Date Input based on Monthly or Yearly -->
+                    <div class="form-group" id="dateInputGroup">
+                        <label for="reportDate">Select Date</label>
+                        <input type="month" id="reportDate" name="reportDate" required>
+                    </div>
+            
+                    <button type="submit" class="submit-button">Generate Report</button>
+                </form>
+                <button onclick="showDashboard()" class="back-button">
+                    <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                </button>
+            </div>
+            
+        </main>
+        <!-- End Main Content -->
+    </div>
+    
+    <script src="../js/AdminDashboardScripts.js"></script> 
+
+   
+
+
+</body>
+</html>
