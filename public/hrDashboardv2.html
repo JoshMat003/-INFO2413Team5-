@@ -48,12 +48,18 @@
                         <span class="material-symbols-outlined">add_ad</span> Create New Job Post
                     </li>
                     <li class="sidebar-list-item" onclick="showJobPosts()">
-                        <span class="material-symbols-outlined">post</span> View Job Posts
+                        <span class="material-symbols-outlined">post</span> Edit Job Posts
                     </li>
                     <li class="sidebar-list-item" onclick="showApplicants()">
                         <span class="material-symbols-outlined">diversity_3</span> View Applicants
                     </li>
-                    <li class="sidebar-list-item">
+                    <li class="sidebar-list-item" onclick="window.location.href='/jobPost.html'">
+                        <span class="material-symbols-outlined">search</span> View Job Posts
+                    </li>
+                    <li class="sidebar-list-item" onclick="window.location.href='/jobApplications.html'">
+                        <span class="material-symbols-outlined">description</span> View Job Applications
+                    </li>
+                    <li class="sidebar-list-item" onclick="showProfileSettings()">
                         <span class="material-symbols-outlined">settings</span> Profile Settings
                     </li>
                 </ul>
@@ -127,16 +133,7 @@
                             <label for="jobCategory">Job Category:</label>
                             <select id="jobCategory" name="jobCategory" required>
                                 <option value="">Select Category</option>
-                                <option value="1">Healthcare</option>
-                                <option value="2">Information Technology</option>
-                                <option value="3">Engineering</option>
-                                <option value="4">Education</option>
-                                <option value="5">Finance and Accounting</option>
-                                <option value="6">Construction and Trades</option>
-                                <option value="7">Sales and Marketing</option>
-                                <option value="8">Hospitality and Tourism</option>
-                                <option value="9">Manufacturing and Production</option>
-                                <option value="10">Research and Development</option>
+                                <!-- Categories will be loaded dynamically -->
                             </select>
                         </div>
 
@@ -230,6 +227,64 @@
                     <div id="applicants-container">
                         <!-- Applicant cards will be inserted here -->
                     </div>
+                </div>
+
+                <!-- Add this in the main-container section -->
+                <div id="profile-settings-view" style="display: none;">
+                    <div class="main-title">
+                        <h2>Profile Settings</h2>
+                        <button onclick="showDashboard()" class="back-button">
+                            <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                        </button>
+                    </div>
+                    <form id="profileSettingsForm" class="profile-form">
+                        <!-- Profile Image Section -->
+                        <div class="form-group profile-image-section">
+                            <img id="profileImagePreview" src="/images/default-profile.png" alt="Profile Image">
+                            <label for="profileImage" class="upload-label">
+                                <span class="material-symbols-outlined">upload</span>
+                                Upload Profile Picture
+                            </label>
+                            <input type="file" id="profileImage" name="profileImage" accept="image/*" style="display: none;">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrFirstName">First Name:</label>
+                            <input type="text" id="hrFirstName" name="hrFirstName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrLastName">Last Name:</label>
+                            <input type="text" id="hrLastName" name="hrLastName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrEmail">Email:</label>
+                            <input type="email" id="hrEmail" name="hrEmail" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrDOB">Date of Birth:</label>
+                            <input type="date" id="hrDOB" name="hrDOB" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrCurrentPassword">Current Password:</label>
+                            <input type="password" id="hrCurrentPassword" name="hrCurrentPassword">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrNewPassword">New Password (leave blank to keep current):</label>
+                            <input type="password" id="hrNewPassword" name="hrNewPassword">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrConfirmPassword">Confirm New Password:</label>
+                            <input type="password" id="hrConfirmPassword" name="hrConfirmPassword">
+                        </div>
+
+                        <button type="submit" class="submit-button">Update Profile</button>
+                    </form>
                 </div>
             </main>
             <!-- end main stuff -->

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Applications - HireHub</title>
+    
+    <!-- google font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    <!-- icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    
+    <!-- css files -->
+    <link rel="stylesheet" href="/CSS/HRDashboard.css">
+    <link rel="stylesheet" href="/CSS/jobForm.css">
+    <link rel="stylesheet" href="/CSS/jobPost.css">
+    <link rel="stylesheet" href="/CSS/jobApplications.css">
+</head>
+<body>
+    <div class="grid-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">
+                <h2>Job Applications</h2>
+            </div>
+            <div class="header-right">
+                <button onclick="window.location.href='/hr/dashboard'" class="back-button">
+                    <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-container">
+            <div id="view-applications-button-container" class="center-button">
+                <!-- Search/Filter Form -->
+                <div class="search-form-container">
+                    <form id="applicationSearchForm" class="search-form">
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="jobTitle">Job Title:</label>
+                                <input type="text" id="jobTitle" name="jobTitle" placeholder="Search by job title">
+                            </div>
+                            
+                            <div class="form-field">
+                                <label for="applicantName">Applicant Name:</label>
+                                <input type="text" id="applicantName" name="applicantName" placeholder="Search by applicant name">
+                            </div>
+                        
+                            <div class="form-field">
+                                <label for="applicationStatus">Application Status:</label>
+                                <select id="applicationStatus" name="applicationStatus">
+                                    <option value="">All Statuses</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Under Review">Under Review</option>
+                                    <option value="Interviewed">Interviewed</option>
+                                    <option value="Accepted">Accepted</option>
+                                    <option value="Rejected">Rejected</option>
+                                </select>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="applicationDate">Application Date:</label>
+                                <input type="date" id="applicationDate" name="applicationDate">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <button onclick="handleViewApplications()" class="view-jobs-button">
+                    <span class="material-symbols-outlined">description</span>
+                    View Applications
+                </button>
+            </div>
+            
+            <div id="applications-container" style="display: none">
+                <div class="reset-button-container">
+                    <button onclick="handleReset()" class="reset-button">
+                        <span class="material-symbols-outlined">refresh</span>
+                        Reset View
+                    </button>
+                </div>
+                <!-- Applications will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/jobApplications.js"></script>
+</body>
+</html> 
