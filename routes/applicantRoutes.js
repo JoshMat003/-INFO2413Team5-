@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const multer = require('multer');
 const applicantPictureUpload = multer({storage: multer.memoryStorage() });
 
+
 // function to generate the new or next Applicant_ID
 async function generateApplicantID() {
 	const sql = 'SELECT Applicant_ID FROM Applicant_Table ORDER BY Applicant_ID DESC LIMIT 1';
@@ -64,10 +65,19 @@ router.post('/login', async (req, res) => {
 
 });
 
+// Check Login
+
+router.get('/checkLogin', (req, res) => {
+    if (!req.session.applicantID) {
+        return res.status(401).json({ loggedIn: false });
+    }
+	res.status(200).json({ loggedIn: true });
+});
+
 // Serve the applicant dashboard page
 router.get('/dashboard', (req, res) => {
     if (!req.session.applicantID) {
-        return res.redirect('/ApplicantLogin_v1.html');
+        return res.status(401).json({ loggedIn: false });
     }
     res.sendFile(path.join(__dirname, '../public/ApplicantDashboard.html'));
 });
@@ -75,10 +85,7 @@ router.get('/dashboard', (req, res) => {
 // Get applicant details for dashboard
 router.get('/dashboard/details', (req, res) => {
     if (!req.session.applicantID) {
-        return res.status(401).json({
-            success: false,
-            message: 'Not authenticated'
-        });
+        return res.redirect('/login.html');
     }
     res.json({
         success: true,
@@ -90,9 +97,9 @@ router.get('/dashboard/details', (req, res) => {
 // Get session details (needed for dashboard)
 router.get('/sessionDetails', (req, res) => {
     if (!req.session.applicantID) {
-        return res.sendStatus(401);
+        return res.sendStatus(401).send(' Unauthorized to Access Applicant Details');;
     }
-     res.json({
+    res.json({
         id: req.session.applicantID,
         name: req.session.applicantFirstName
     });
@@ -144,6 +151,7 @@ if (!req.session.applicantID) {
 		res.status(500).send('Internal Server Error');
 	}
 });	
+
 
 // router handle applicant registration
 router.post('/register', async (req, res) => {
@@ -312,4 +320,57 @@ router.delete('/deletePicture', async (req, res) => {
 	}
 });
 
+// router handle get application details from Job_Applications, JobPost_Table, JobCategory_Table.
+router.get('/dashboard/applyDetails', async (req,res) => {
+	console.log('ApplyDetails check applicant ID value : ', req.session.applicantID);
+	if (!req.session.applicantID) {
+		return res.redirect('/login.html');
+	}
+	
+	try {
+		const sql = ` SELECT JA.JobApplication_ID, JA.Job_ID, JP.job_title, JC.JobCategory_Name, JP.job_position, JP.annual_salary, JP.province, JP.city, DATE_FORMAT(JA.Application_date, '%Y-%m-%d') AS Application_date, JA.status FROM Job_Applications JA
+		JOIN JobPost_Table JP ON JA.Job_ID = JP.job_id
+		JOIN JobCategory_Table JC ON JP.job_category_id = JC.JobCategory_ID
+		WHERE JA.Applicant_ID = ?
+		`;
+		
+		const result = await db.query(sql, [req.session.applicantID]);
+		res.json(result);
+		console.log('applyDetail route get DB result :', result);
+	} catch (error) {
+		console.error('Error fetching /applyDetails: ', error);
+		res.status(500).send('Internal Server Error');
+	}
+});
+
+// router handle delete application details from ApplicantDashboard.html
+router.post('/delete', async (req, res) => {
+    if (!req.session.applicantID) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    const { ids } = req.body;
+	console.log('Delete JobApplication_ID: ', ids);
+    if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).send('No IDs provided');
+    }
+
+    try {
+        const sql = 'DELETE FROM Job_Applications WHERE JobApplication_ID IN (?)';
+        await db.query(sql, [ids]);
+        res.status(204).send(); 
+    } catch (error) {
+        console.error('Error deleting education records:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/signOut', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send('Could not log out.');
+        }
+        res.status(204).send(); // Successfully logged out
+    });
+});
 module.exports = router;
