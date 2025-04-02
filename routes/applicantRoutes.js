@@ -3,6 +3,8 @@ const router = express.Router();
 const db = require('../db'); // Import db.js from up one folder././db.js
 const path = require('path');
 const bcrypt = require('bcrypt');
+const multer = require('multer');
+const applicantPictureUpload = multer({storage: multer.memoryStorage() });
 
 // function to generate the new or next Applicant_ID
 async function generateApplicantID() {
@@ -250,6 +252,64 @@ router.post('/apply', async (req, res) => {
         console.error('Error submitting application:', error);
         res.status(500).json({ error: 'Failed to submit application' });
     }
+});
+
+// get profile picture
+router.get('/profilePicture', async (req, res) => {
+	
+	try {
+		const sql=`SELECT ProfilePicture FROM ApplicantPicture_Table WHERE Applicant_ID = ?`;
+		const getProfilePictureResult = await db.query(sql, [req.session.applicantID]);
+		
+			if (getProfilePictureResult.length > 0) {
+				//res.json({ ProfilePicture: getProfilePictureResult[0].ProfilePicture }); // send back the profile picture
+				
+				const profilePictureBuffer = getProfilePictureResult[0].ProfilePicture;
+				const profilePictureBase64 = profilePictureBuffer.toString('base64');
+				// console.log('Picture in base64 : ', profilePictureBase64) // for debug
+				res.json({ProfilePicture: `data:image/jpeg;base64,${profilePictureBase64}`});
+				
+			} else {
+				res.json({ ProfilePicture: null }); // No picture found
+			}
+		
+	} catch (error) {
+			console.error('Error loading applicant picture : ', error);
+			res.status(500).send('Database error.');
+	}
+});
+
+// Upload profile picture
+router.post('/uploadPicture', applicantPictureUpload.single('profilePicture'), async (req, res) => {
+    
+    const profilePicture = req.file.buffer;
+	
+	try {
+		const sql = `INSERT INTO ApplicantPicture_Table (Applicant_ID, ProfilePicture) 
+		VALUES (?, ?) ON DUPLICATE KEY UPDATE ProfilePicture = ?`;
+		
+		await db.query(sql, [req.session.applicantID, profilePicture, profilePicture]);
+		res.status(204).send();
+		
+	} catch (error) {
+		console.error('Error uploading applicant picture :', error);
+		res.status(500).send('Database error');
+	}		
+});
+
+// delete profile picture
+router.delete('/deletePicture', async (req, res) => {
+	
+	try {
+		const sql = `DELETE FROM ApplicantPicture_Table WHERE Applicant_ID = ?`;
+		
+		await db.query(sql, [req.session.applicantID]);
+		res.status(204).send();
+		
+	} catch (error) {
+		console.error('Error delete applicant picture :', error);
+		res.status(500).send('Database error');
+	}
 });
 
 module.exports = router;

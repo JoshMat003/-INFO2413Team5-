@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View & Update Applicant Details</title>
+    <title>View & Update Personal Details</title>
     <!-- google font -->
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
@@ -61,11 +61,19 @@
 		<div id="dashboard-view">
 			
 			<div class="main-title">
-			<h2>View & Update Education Details</h2>
+			<h2>View & Update Personal Details</h2>
 			</div>
 			
 		</div>	
 		<!-- end home screen-->	 
+		<br>
+		<blockquote>
+                <img id="profilePicture" src="" alt="Profile Picture" style="width:200px; height:auto;"><br>
+                <p id="noPicture" style="display:none;"><b>No Profile Picture</b></p><br>
+                <input type="file" id="uploadPicture" accept="image/jpeg, image/jpg" /><br>
+                <button type="button" id="uploadButton">Upload Picture</button>
+                <button type="button" id="deleteButton" style="display:none;">Delete Picture</button>
+		</blockquote>
 		
 			<form id="applicantInfo">
 				
@@ -149,6 +157,66 @@
 		document.getElementById('updateButton').addEventListener('click', (event) => {
         window.location.href = 'UpdateApplicantDetail.html';
 		});
+		
+		//Load applicant profile picture ---------------------------------------------------/
+		fetch('/applicant/profilePicture')
+        .then(response => response.json())
+        .then(data => {
+            
+            if (data.ProfilePicture) {
+                document.getElementById('profilePicture').src = data.ProfilePicture; // Show the Base64 image source
+				document.getElementById('deleteButton').style.display = 'inline-block';
+				document.getElementById('noPicture').style.display = 'none';
+            } else {
+                console.log('No profile picture found.');
+				document.getElementById('profilePicture').style.display = 'none';
+				document.getElementById('noPicture').style.display = 'block';
+            }
+        })
+        .catch(error => console.error('Error fetching profile picture:', error));
+		
+		// Handle upload profile picture button --------------------------------------------/
+		document.getElementById('uploadButton').addEventListener('click', async () => {
+			const fileInput = document.getElementById('uploadPicture');
+			const file = fileInput.files[0];
+			if (!file){
+				alert('Please select a file to upload.');
+				return;
+			}
+			const formData = new FormData();
+			formData.append('profilePicture', file);
+
+			const uploadPictureResponse = await fetch('/applicant/uploadPicture', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (uploadPictureResponse.ok) {
+				alert('Profile picture uploaded successfully!');
+				window.location.reload(); // Reload to update picture
+			} else {
+				console.error('Error uploading picture : ', error);
+				alert('Failed to upload picture.');
+			}
+		});
+		
+		// Handle delete profile picture button -----------------------------------------/
+        document.getElementById('deleteButton').addEventListener('click', async () => {
+            const deleteResponse = await fetch('/applicant/deletePicture', {
+                method: 'DELETE'
+            });
+			
+            if (deleteResponse.ok) {
+                alert('Profile picture deleted successfully!');
+				window.location.reload();
+                document.getElementById('profilePicture').src = '';
+				document.getELementById('profilePicture').style.display = 'none';
+                document.getElementById('deleteButton').style.display = 'none';
+            } else {
+                alert('Failed to delete picture.');
+            }
+        });
+		
 	});
 	
 		function signOut() {
