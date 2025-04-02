@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicant Dashboard</title>
+	 <!-- google font -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+     <!-- icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	
+	<!-- css file-->
+	<link rel="stylesheet" href="/CSS/ApplicantDashboard.css">
+	
+</head>
+<body>
+<div class="grid-container">
+	<!-- top bar -->
+	<header class="header">
+		<div class="header-right">                 
+			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+		</div>
+	</header>
+	<!-- end top bar -->
+	
+		
+	<!-- menu on the left -->
+	<aside id="sidebar">
+		<div class="sidebar-title">
+			<div class="sidebar-brand">
+				WELCOME <br> <span id="applicantFirstName"></span>!
+			</div>
+			
+		</div>
+
+		<ul class="sidebar-list">
+			<li class="sidebar-list-item" onclick="showDashBoard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+				
+			<li class="sidebar-list-item" onclick="AddEducationDetail()"><span class="material-symbols-outlined">add_ad</span> Add Education Detail</li>
+			<li class="sidebar-list-item" onclick="ViewEducationDetail()"><span class="material-symbols-outlined">post</span> View & Edit Education Detail</li>
+			
+			<li class="sidebar-list-item" onclick="AddWorkExperience()"><span class="material-symbols-outlined">add_ad</span> Add Work Experience</li>
+			<li class="sidebar-list-item" onclick="ViewWorkExperience()"><span class="material-symbols-outlined">post</span> View & Edit Work Experience</li>
+			
+			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
+			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
+			
+			<li class="sidebar-list-item" onclick="ViewJobPost()"><span class="material-symbols-outlined">work</span> View & Apply Job Post</li>
+			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
+			
+		</ul>
+	</aside>
+	 <!-- end menu on the left -->
+			
+	<!-- main stuff -->
+	<main class="main-container">
+		
+		<!-- home screen -->
+		<div id="dashboard-view">
+			
+			<div class="main-title">
+			<h2>APPLICANT DASHBOARD</h2>
+			</div>
+			
+		</div>	
+		<!-- end home screen-->	
+		
+	<b> View and Delete Application History</b><br><br>
+	
+		<table id="applyDetailTable">
+			<thead>
+				<tr>
+					<th>Select</th>
+					<th>Job Post ID</th>
+					<th>Job Title</th>
+					<th>Job Category</th>
+					<th>Job Position </th>
+					<th>Annual Salary</th>
+					<th>Province</th>
+					<th>City </th>
+					<th>Application Date </th>
+					<th>Application Status </th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr id="noRecordRow">
+					<td colspan="10">No Record</td>
+				</tr>
+			</tbody>
+		</table>
+	<button id="deleteButton">Delete Selected</button>
+	</main>	
+	<!-- end main stuff -->	
+		
+	
+</div>
+<script>
+		console.log('dashboard.js script has been loaded.');
+		// get applicant first name
+		document.addEventListener('DOMContentLoaded', async () => {
+			const response = await fetch('/applicant/dashboard/details');
+			console.log('Response status:', response.status);
+			if (response.ok) {
+				const applicantDetails = await response.json();
+				console.log('Fetched data:', applicantDetails);
+				document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+			} else {
+				 console.error('Failed to fetch applicant details');
+			}
+			
+		});
+		
+		// get job post apply details by using Applicant_ID
+		document.addEventListener('DOMContentLoaded', async () => {
+			const applyDetailResponse = await fetch('/applicant/dashboard/applyDetails');
+			const tableBody = document.getElementById('applyDetailTable').querySelector('tbody');
+			const noRecordRow = document.getElementById('noRecordRow');
+			console.log('Apply Detail Response value : ', applyDetailResponse);
+			if (applyDetailResponse.ok) {
+				const applyData = await applyDetailResponse.json();
+				tableBody.innerHTML = '';
+				
+				if (applyData.length > 0) {
+					applyData.forEach(application => {
+						const row = document.createElement('tr');
+						row.innerHTML = `
+							<td><input type="checkbox" class="deleteApplyDetailCheckbox" data-id="${application.JobApplication_ID}"></td>
+							<td>${application.Job_ID}</td>
+							<td>${application.job_title}</td>
+							<td>${application.JobCategory_Name}</td>
+							<td>${application.job_position}</td>
+							<td>${application.annual_salary}</td>
+							<td>${application.province}</td>
+							<td>${application.city}</td>
+							<td>${application.Application_date}</td>
+							<td>${application.status}</td>
+						`;
+						tableBody.appendChild(row);
+					});
+				} else {
+					noRecordRow.style.display = '';
+					noRecordRow.innerHTML = '<td colspan="10"> No Record Found. </td>';
+				}	
+			} else {
+				noRecordRow.style.display = '';
+				noRecordRow.innerHTML = '<td colspan="10"> Failed to Fetch Application Details. </td>' ;
+			}
+		});
+		
+		// Delete Application details from the table list
+		document.getElementById('deleteButton').addEventListener('click', async () => {
+        const selectedIds = Array.from(document.querySelectorAll('.deleteApplyDetailCheckbox:checked'))
+            .map(checkbox => checkbox.getAttribute('data-id'));
+
+        if (selectedIds.length > 0) {
+            const deleteResponse = await fetch('/applicant/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ids: selectedIds }),
+            });
+
+            if (deleteResponse.ok) {
+                alert('Selected records deleted successfully.');
+                location.reload(); // Reload the page to update the table
+            } else {
+                alert('Failed to delete selected records.');
+            }
+        } else {
+            alert('Please select at least one record to delete.');
+        }
+		});
+		
+		async function checkLogin() {
+			try {
+				const checkLoginResponse = await fetch('/applicant/checkLogin');
+				console.log('checkLoginResponse:', checkLoginResponse);
+				
+				if (checkLoginResponse.ok) {
+					const data = await checkLoginResponse.json();
+					if (data.loggedIn) {
+						console.log('Applicant Login Check Valid.');
+					} else {
+						console.log('Applicant Login Check Invalid. Redirecting to login.');
+						window.location.href = '/login.html'; // Redirect to login.html
+					}
+				} else {
+					console.log('Applicant Login Check Invalid. Redirecting to login.');
+					window.location.href = '/login.html'; // Handle other non-200 responses
+				}
+			} catch (error) {
+				console.error('Error checking Applicant login:', error);
+				window.location.href = '/login.html'; // Redirect on error as well
+			}
+		}
+		
+		
+		
+		async function signOut() {
+			try {
+				const signOutResponse = await fetch('/applicant/signOut', {
+					method: 'POST'
+				});
+				
+				if (signOutResponse.ok) {
+					sessionStorage.clear(); // clear client session
+					// check clear success or not then redirect to related page
+					if (sessionStorage.length === 0) {
+					window.location.href = '/signedOut.html'; // Redirect to signedOut.html if clearing was successful
+					} else {
+						console.error('Failed to clear client session storage.');
+					}
+				} else {
+					console.error('Failed to clear server session.');
+				}
+			} catch (error) {
+				console.error('Error during sign out : ', error);
+			}
+			
+		}
+		
+		function showDashBoard() {
+            window.location.href = '/ApplicantDashboard.html';
+        }
+
+        function AddEducationDetail() {
+            window.location.href = '/AddEducationDetail.html';
+        }
+
+        function ViewEducationDetail() {
+            window.location.href = '/CheckEducationDetail.html';
+        }
+
+        function AddWorkExperience() {
+            window.location.href = '/AddWorkExperience.html';
+        }
+
+        function ViewWorkExperience() {
+            window.location.href = '/CheckWorkExperience.html';
+        }
+
+        function AddPreferredJob() {
+            window.location.href = '/AddPreferredJob.html';
+        }
+		
+		function ViewPreferredJob() {
+            window.location.href = '/CheckPreferredJob.html';
+        }
+				
+		function ViewJobPost() {
+            window.location.href = '/ApplicantJobPosts.html';
+        }
+		
+		function ViewApplicantDetail() {
+            window.location.href = '/CheckApplicantDetail.html';
+        }
+		
+		window.onload = checkLogin;
+</script>	
+</body>
+</html>
