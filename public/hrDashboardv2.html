@@ -14,6 +14,9 @@
         <!-- css files -->
         <link rel="stylesheet" href="/CSS/HRDashboard.css">
         <link rel="stylesheet" href="/CSS/jobForm.css">
+
+        <!-- Add this before your other scripts -->
+        <script src="/js/pushNotifications.js"></script>
     </head>
     <body>
         <div class="grid-container">
@@ -24,7 +27,7 @@
                     <span class="material-symbols-outlined">menu</span>
                 </div>
                 <div class="header-right">
-                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="material-symbols-outlined" onclick="showNotifications()" id="notificationBell">notifications</span>
                     <span class="material-symbols-outlined">mail</span>
                     <span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
                 </div>
@@ -102,6 +105,19 @@
                                 <span class="material-symbols-outlined">settings</span>
                             </div>
                         </div> 
+                    </div>
+                </div>
+
+                <!-- Notifications View -->
+                <div id="notifications-view" style="display: none;">
+                    <div class="main-title">
+                        <h2>NOTIFICATIONS</h2>
+                        <button onclick="showDashboard()" class="back-button">
+                            <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+                        </button>
+                    </div>
+                    <div id="notifications-container" class="notifications-container">
+                        <!-- Notifications will be loaded here -->
                     </div>
                 </div>
 
@@ -242,12 +258,13 @@
                     <form id="profileSettingsForm" class="profile-form">
                         <!-- Profile Image Section -->
                         <div class="form-group profile-image-section">
-                            <img id="profileImagePreview" src="/images/default-profile.png" alt="Profile Image">
+                            <img id="profileImagePreview" src="/images/default-profile.png" alt="Profile Image" onerror="this.src='/images/default-profile.png'">
                             <label for="profileImage" class="upload-label">
                                 <span class="material-symbols-outlined">upload</span>
                                 Upload Profile Picture
                             </label>
                             <input type="file" id="profileImage" name="profileImage" accept="image/*" style="display: none;">
+                            <div id="imageError" style="color: red; display: none; margin-top: 10px;"></div>
                         </div>
 
                         <div class="form-group">
@@ -294,5 +311,283 @@
 
         <!-- js file -->
         <script src="/js/hrDashboardScripts.js"></script>
+        <script>
+        // Add these functions to your existing JavaScript
+        function showNotifications() {
+            // Hide all other views
+            document.getElementById('dashboard-view').style.display = 'none';
+            document.getElementById('job-posts-view').style.display = 'none';
+            document.getElementById('job-post-form').style.display = 'none';
+            document.getElementById('applicants-view').style.display = 'none';
+            document.getElementById('profile-settings-view').style.display = 'none';
+            
+            // Show notifications view
+            document.getElementById('notifications-view').style.display = 'block';
+            
+            // Load notifications
+            loadNotifications();
+        }
+
+        // Initialize push notifications when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize push notifications
+            await window.PushNotifications.initialize();
+
+            // Load notifications count
+            try {
+                const response = await fetch('/hr/notifications/unread-count');
+                if (response.ok) {
+                    const { count } = await response.json();
+                    updateNotificationCount(count);
+                }
+            } catch (error) {
+                console.error('Error loading notification count:', error);
+            }
+        });
+
+        // Modify the loadNotifications function to include push notifications
+        async function loadNotifications() {
+            try {
+                console.log('Loading notifications...');
+                const response = await fetch('/hr/notifications');
+                if (response.ok) {
+                    const notifications = await response.json();
+                    console.log('Received notifications:', notifications);
+                    const container = document.getElementById('notifications-container');
+                    container.innerHTML = '';
+                    
+                    if (notifications.length === 0) {
+                        container.innerHTML = '<p class="no-notifications">No notifications found.</p>';
+                        return;
+                    }
+                    
+                    notifications.forEach(notification => {
+                        const notificationElement = document.createElement('div');
+                        notificationElement.className = `notification-item${notification.is_read ? '' : ' unread'}`;
+                        
+                        let details = {};
+                        try {
+                            details = JSON.parse(notification.details);
+                        } catch (e) {
+                            console.log('Could not parse notification details:', e);
+                        }
+                        
+                        notificationElement.innerHTML = `
+                            <div class="notification-content" onclick="window.location.href='/jobApplications.html'" style="cursor: pointer;">
+                                <h3>${notification.title}</h3>
+                                <p>${notification.message}</p>
+                                <p class="notification-details">
+                                    Score: ${details.screening_score || 'N/A'}<br>
+                                    Job ID: ${details.job_id || 'N/A'}
+                                </p>
+                                <small>${new Date(notification.created_at).toLocaleString()}</small>
+                            </div>
+                            <button onclick="event.stopPropagation(); markAsRead(${notification.notification_id})" class="mark-read-btn" 
+                                    ${notification.is_read ? 'disabled' : ''}>
+                                <span class="material-symbols-outlined">done</span>
+                            </button>
+                        `;
+
+                        // Show push notification for unread notifications
+                        if (!notification.is_read) {
+                            window.PushNotifications.show(notification.title, {
+                                body: notification.message,
+                                url: '/jobApplications.html',
+                                data: details
+                            });
+                        }
+
+                        container.appendChild(notificationElement);
+                    });
+                    
+                    updateNotificationCount(notifications.filter(n => !n.is_read).length);
+                } else {
+                    console.error('Failed to load notifications:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        function updateNotificationCount(count) {
+            const bell = document.getElementById('notificationBell');
+            if (count > 0) {
+                bell.setAttribute('data-count', count);
+                bell.classList.add('has-notifications');
+            } else {
+                bell.removeAttribute('data-count');
+                bell.classList.remove('has-notifications');
+            }
+        }
+
+        async function markAsRead(notificationId) {
+            try {
+                console.log('Marking notification as read:', notificationId);
+                const response = await fetch(`/hr/notifications/${notificationId}/read`, {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    loadNotifications(); // Reload notifications
+                } else {
+                    console.error('Failed to mark notification as read:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        // Load notifications when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/hr/notifications');
+                const notifications = await response.json();
+                
+                // Update notification count
+                const notificationCount = notifications.filter(n => !n.read).length;
+                const notificationBell = document.getElementById('notificationBell');
+                if (notificationCount > 0) {
+                    notificationBell.classList.add('has-notifications');
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        });
+
+        // Mark notification as read
+        async function markNotificationAsRead(notificationId) {
+            try {
+                await fetch(`/hr/notifications/${notificationId}/read`, {
+                    method: 'POST'
+                });
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+        </script>
+
+        <!-- Add notification styles -->
+        <style>
+            .notifications-container {
+                padding: 20px;
+                max-width: 800px;
+                margin: 0 auto;
+                width: 100%;
+            }
+
+            .notification-item {
+                background-color: #263043;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .notification-item.unread {
+                border-left: 4px solid #4CAF50;
+            }
+
+            .notification-content {
+                flex-grow: 1;
+                padding: 0 15px;
+            }
+
+            .notification-content h3 {
+                margin: 0 0 8px 0;
+                color: #ffffff;
+                font-size: 16px;
+            }
+
+            .notification-content p {
+                margin: 0 0 8px 0;
+                color: #9e9ea4;
+                font-size: 14px;
+            }
+
+            .notification-content small {
+                color: #666;
+                font-size: 12px;
+            }
+
+            .mark-read-btn {
+                background: none;
+                border: none;
+                color: #4CAF50;
+                cursor: pointer;
+                padding: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                width: 36px;
+                height: 36px;
+                transition: background-color 0.3s ease;
+            }
+
+            .mark-read-btn:hover {
+                background-color: rgba(76, 175, 80, 0.1);
+            }
+
+            #notificationBell {
+                position: relative;
+                cursor: pointer;
+            }
+
+            #notificationBell.has-notifications::after {
+                content: attr(data-count);
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                background-color: #ff4444;
+                color: white;
+                border-radius: 50%;
+                padding: 2px 6px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+
+            .notification-details {
+                margin: 8px 0;
+                font-size: 14px;
+                color: #9e9ea4;
+            }
+
+            .notification-content {
+                transition: background-color 0.3s ease;
+            }
+
+            .notification-content:hover {
+                background-color: #2d3a4f;
+            }
+
+            .notification-item {
+                cursor: pointer;
+            }
+
+            /* Ensure the mark as read button doesn't trigger the click event */
+            .mark-read-btn {
+                position: relative;
+                z-index: 2;
+            }
+
+            /* Add these styles */
+            .enable-notifications-btn {
+                background: none;
+                border: none;
+                color: #fff;
+                cursor: pointer;
+                padding: 8px;
+                margin-right: 10px;
+                border-radius: 50%;
+                transition: background-color 0.3s;
+            }
+
+            .enable-notifications-btn:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        </style>
     </body>
 </html>

@@ -65,8 +65,6 @@ async function showJobPosts() {
         
         // Function to format experience requirement
         function formatExperience(experience) {
-            console.log('Raw experience value:', experience); // Add logging
-            
             if (!experience || experience === '') return 'Not specified';
             
             // Map the enum values to user-friendly strings
@@ -77,14 +75,10 @@ async function showJobPosts() {
                 'expert': 'Expert (10+ years)'
             };
             
-            const formattedExperience = experienceMap[experience.toLowerCase()];
-            console.log('Formatted experience:', formattedExperience); // Add logging
-            
-            return formattedExperience || experience;
+            return experienceMap[experience.toLowerCase()] || experience;
         }
         
         jobPosts.forEach(post => {
-            console.log('Processing post:', post); // Debug log
             const dueDate = new Date(post.application_due_date).toLocaleDateString();
             
             const postCard = document.createElement('div');
@@ -380,8 +374,15 @@ async function showProfileSettings() {
         document.getElementById('hrDOB').value = profileData.dateOfBirth?.split('T')[0] || '';
         
         // Set profile image if exists
+        const profileImagePreview = document.getElementById('profileImagePreview');
         if (profileData.profileImage) {
-            document.getElementById('profileImagePreview').src = profileData.profileImage;
+            profileImagePreview.src = `/uploads/profile-images/${profileData.profileImage}`;
+            profileImagePreview.onerror = function() {
+                console.error('Error loading profile image');
+                this.src = '/images/default-profile.png';
+            };
+        } else {
+            profileImagePreview.src = '/images/default-profile.png';
         }
 
         // Set up image preview
@@ -391,7 +392,7 @@ async function showProfileSettings() {
         document.getElementById('profileSettingsForm').onsubmit = updateProfileSettings;
     } catch (error) {
         console.error('Error loading profile:', error);
-        alert('Error loading profile data');
+        showProfileError('Error loading profile data');
     }
 }
 
@@ -408,30 +409,42 @@ function setupImagePreview() {
     imageInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) {
+            console.log('No file selected');
             return;
         }
 
+        console.log('File selected:', {
+            name: file.name,
+            type: file.type,
+            size: file.size
+        });
+
         // Validate file type
         if (!file.type.startsWith('image/')) {
+            console.error('Invalid file type:', file.type);
             alert('Please select an image file');
             return;
         }
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
+            console.error('File too large:', file.size);
             alert('Image size should be less than 5MB');
             return;
         }
 
         const reader = new FileReader();
         reader.onload = function(event) {
+            console.log('FileReader loaded successfully');
             imagePreview.src = event.target.result;
             imagePreview.style.display = 'block';
+            console.log('Preview image updated');
         };
         reader.onerror = function(error) {
             console.error('Error reading file:', error);
             alert('Error reading image file');
         };
+        console.log('Starting to read file as DataURL');
         reader.readAsDataURL(file);
     });
 }

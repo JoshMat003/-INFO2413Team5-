@@ -3,32 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome</title>
-	<link rel="stylesheet" href="/CSS/applicantDashboard.css">	
+    <title>Applicant Dashboard</title>
+	 <!-- google font -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+     <!-- icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	
+	<!-- css file-->
+	<link rel="stylesheet" href="/CSS/applicantDashboard.css">
 	
 </head>
 <body>
-    <h1>Welcome, <span id="applicantFirstName"></span>!</h1>
-    <p>Your Applicant ID: <span id="applicantID"></span></p>
-	<b>Test Add Applicant Detail=============</b><br><br>
-	<a href="/AddEducationDetail_v1.html"><b>Add Education Detail</b></a><br><br>
-	<a href="/AddWorkExperience_v1.html"><b>Add Work Experience</b></a><br><br>
-	<a href="/AddPreferredJob_v1.html"><b>Add Preferred Job</b></a><br><br>
+<div class="grid-container">
+	<!-- top bar -->
+	<header class="header">
+		<div class="header-right">
+			<span class="material-symbols-outlined" onclick="showNotifications()" id="notificationBell">notifications</span>                 
+			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+		</div>
+	</header>
+	<!-- end top bar -->
 	
-	
-	<b>Test Check Applicant Detail===========</b><br><br>
-	<a href="/CheckEducationDetail_v2.html"><b>Check Education Detail</br></a><br><br>
-	<a href="/CheckWorkExperience_v1.html"><b>Check Work Experience</br></a><br><br>
-	<a href="/CheckPreferredJob_v1.html"><b>Check Preferred Job</br></a><br><br>
-
-    
-    <button onclick="window.location.href='/applicant/job-posts'" class="job-posts-button">
-        View Job Posts
-    </button>
-	
-	<script src="/js/applicantDashboard.js"></script>
 		
+	<!-- menu on the left -->
+	<aside id="sidebar">
+		<div class="sidebar-title">
+			<div class="sidebar-brand">
+				WELCOME <br> <span id="applicantFirstName"></span>!
+			</div>
+			
+		</div>
 
-	</script>
+		<ul class="sidebar-list">
+			<li class="sidebar-list-item" onclick="showDashBoard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+				
+			<li class="sidebar-list-item" onclick="AddEducationDetail()"><span class="material-symbols-outlined">add_ad</span> Add Education Detail</li>
+			<li class="sidebar-list-item" onclick="ViewEducationDetail()"><span class="material-symbols-outlined">post</span> View & Edit Education Detail</li>
+			
+			<li class="sidebar-list-item" onclick="AddWorkExperience()"><span class="material-symbols-outlined">add_ad</span> Add Work Experience</li>
+			<li class="sidebar-list-item" onclick="ViewWorkExperience()"><span class="material-symbols-outlined">post</span> View & Edit Work Experience</li>
+			
+			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
+			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
+			
+			<li class="sidebar-list-item" onclick="ViewJobPost()"><span class="material-symbols-outlined">work</span> View & Apply Job Post</li>	
+			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
+			
+		</ul>
+	</aside>
+	 <!-- end menu on the left -->
+			
+	<!-- main stuff -->
+	<main class="main-container">
+		
+		<!-- home screen -->
+		<div id="dashboard-view">
+			<div class="main-title">
+			<h2>APPLICANT DASHBOARD</h2>
+			</div>
+			<b> Display Something or Function Cards</b><br><br>
+		</div>	
+		<!-- end home screen-->	
+		
+		<!-- Notifications View -->
+		<div id="notifications-view" style="display: none;">
+			<div class="main-title">
+				<h2>NOTIFICATIONS</h2>
+				<button onclick="showDashBoard()" class="back-button">
+					<span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+				</button>
+			</div>
+			<div id="notifications-container" class="notifications-container">
+				<!-- Notifications will be loaded here -->
+			</div>
+		</div>
+		
+	</main>	
+	<!-- end main stuff -->	
+		
+</div>
+<script>
+		console.log('dashboard.js script has been loaded.');
+
+		document.addEventListener('DOMContentLoaded', async () => {
+			const response = await fetch('/applicant/dashboard/details');
+			console.log('Response status:', response.status);
+			if (response.ok) {
+				const applicantDetails = await response.json();
+				console.log('Fetched data:', applicantDetails);
+				document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+			} else {
+				 console.error('Failed to fetch applicant details');
+			}
+		});
+		
+		function signOut() {
+			
+			sessionStorage.clear(); // clear client session
+			
+			// check clear success or not then redirect to related page
+			if (sessionStorage.length === 0) {
+			window.location.href = '/signedOut.html'; // Redirect to signedOut.html if clearing was successful
+		} else {
+			console.error('Failed to clear session storage.');
+		}
+			
+		}
+		
+		function showDashBoard() {
+            window.location.href = '/ApplicantDashboard.html';
+        }
+
+        function AddEducationDetail() {
+            window.location.href = '/AddEducationDetail.html';
+        }
+
+        function ViewEducationDetail() {
+            window.location.href = '/CheckEducationDetail.html';
+        }
+
+        function AddWorkExperience() {
+            window.location.href = '/AddWorkExperience.html';
+        }
+
+        function ViewWorkExperience() {
+            window.location.href = '/CheckWorkExperience.html';
+        }
+
+        function AddPreferredJob() {
+            window.location.href = '/AddPreferredJob.html';
+        }
+		
+		function ViewPreferredJob() {
+            window.location.href = '/checkPreferredJob.html';
+        }
+		
+		function ViewJobPost() {
+			window.location.href = '/jobPost.html';
+		}
+		
+		function ViewApplicantDetail() {
+            window.location.href = '/CheckApplicantDetail.html';
+        }
+
+		function showNotifications() {
+			// Hide dashboard view
+			document.getElementById('dashboard-view').style.display = 'none';
+			
+			// Show notifications view
+			document.getElementById('notifications-view').style.display = 'block';
+			
+			// Load notifications
+			loadNotifications();
+		}
+
+		async function loadNotifications() {
+			try {
+				const response = await fetch('/applicant/notifications');
+				if (response.ok) {
+					const notifications = await response.json();
+					const container = document.getElementById('notifications-container');
+					container.innerHTML = ''; // Clear existing notifications
+					
+					notifications.forEach(notification => {
+						const notificationElement = document.createElement('div');
+						notificationElement.className = 'notification-item' + (notification.read ? '' : ' unread');
+						notificationElement.innerHTML = `
+							<div class="notification-content">
+								<h3>${notification.title}</h3>
+								<p>${notification.message}</p>
+								<small>${new Date(notification.created_at).toLocaleString()}</small>
+							</div>
+							<button onclick="markAsRead('${notification.id}')" class="mark-read-btn">
+								<span class="material-symbols-outlined">done</span>
+							</button>
+						`;
+						container.appendChild(notificationElement);
+					});
+					
+					// Update notification count
+					updateNotificationCount(notifications.filter(n => !n.read).length);
+				}
+			} catch (error) {
+				console.error('Error loading notifications:', error);
+			}
+		}
+
+		function updateNotificationCount(count) {
+			const bell = document.getElementById('notificationBell');
+			if (count > 0) {
+				bell.setAttribute('data-count', count);
+				bell.classList.add('has-notifications');
+			} else {
+				bell.removeAttribute('data-count');
+				bell.classList.remove('has-notifications');
+			}
+		}
+
+		async function markAsRead(notificationId) {
+			try {
+				const response = await fetch(`/applicant/notifications/${notificationId}/read`, {
+					method: 'POST'
+				});
+				if (response.ok) {
+					loadNotifications(); // Reload notifications
+				}
+			} catch (error) {
+				console.error('Error marking notification as read:', error);
+			}
+		}
+
+		// Load notifications count on page load
+		document.addEventListener('DOMContentLoaded', async () => {
+			try {
+				// Load applicant name
+				const response = await fetch('/applicant/dashboard/details');
+				console.log('Response status:', response.status);
+				if (response.ok) {
+					const applicantDetails = await response.json();
+					console.log('Fetched data:', applicantDetails);
+					document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+				} else {
+					console.error('Failed to fetch applicant details');
+				}
+
+				// Load notification count
+				const notifResponse = await fetch('/applicant/notifications/unread-count');
+				if (notifResponse.ok) {
+					const { count } = await notifResponse.json();
+					updateNotificationCount(count);
+				}
+			} catch (error) {
+				console.error('Error loading data:', error);
+			}
+		});
+</script>	
 </body>
 </html>

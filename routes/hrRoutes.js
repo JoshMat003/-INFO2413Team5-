@@ -514,4 +514,63 @@ router.get('/available-jobs', async (req, res) => {
     }
 });
 
+// Get all notifications for HR staff
+router.get('/notifications', async (req, res) => {
+    console.log('Fetching notifications for HR staff member:', req.session.userId);
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'Unauthorized access' });
+    }
+
+    try {
+        const notifications = await db.query(
+            'SELECT * FROM Notifications_Table WHERE recipient_type = "hr" AND recipient_id = ? ORDER BY created_at DESC',
+            [req.session.userId]
+        );
+        console.log('Found notifications:', notifications);
+        res.json(notifications);
+    } catch (error) {
+        console.error('Error fetching HR notifications:', error);
+        res.status(500).json({ error: 'Failed to fetch notifications' });
+    }
+});
+
+// Get unread notification count
+router.get('/notifications/unread-count', async (req, res) => {
+    console.log('Fetching unread count for HR staff member:', req.session.userId);
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'Unauthorized access' });
+    }
+
+    try {
+        const [result] = await db.query(
+            'SELECT COUNT(*) as count FROM Notifications_Table WHERE recipient_type = "hr" AND recipient_id = ? AND is_read = 0',
+            [req.session.userId]
+        );
+        console.log('Unread count:', result.count);
+        res.json({ count: result.count });
+    } catch (error) {
+        console.error('Error fetching unread notification count:', error);
+        res.status(500).json({ error: 'Failed to fetch notification count' });
+    }
+});
+
+// Mark notification as read
+router.post('/notifications/:id/read', async (req, res) => {
+    console.log('Marking notification as read:', req.params.id, 'for HR staff member:', req.session.userId);
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'Unauthorized access' });
+    }
+
+    try {
+        await db.query(
+            'UPDATE Notifications_Table SET is_read = 1 WHERE notification_id = ? AND recipient_type = "hr" AND recipient_id = ?',
+            [req.params.id, req.session.userId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error marking notification as read:', error);
+        res.status(500).json({ error: 'Failed to mark notification as read' });
+    }
+});
+
 module.exports = router; 

@@ -52,8 +52,39 @@
             <button onclick="window.location.href='/applicant/dashboard'" class="back-button">
                 <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
             </button>
+			<div class="header-right">                 
+			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+		</div>
         </header>
+		<!-- end top bar-->
+	<!-- menu on the left -->
+	<aside id="sidebar">
+		<div class="sidebar-title">
+			<div class="sidebar-brand">
+				WELCOME <br> <span id="applicantFirstName"></span>!
+			</div>
+			
+		</div>
 
+		<ul class="sidebar-list">
+			<li class="sidebar-list-item" onclick="showDashBoard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+				
+			<li class="sidebar-list-item" onclick="AddEducationDetail()"><span class="material-symbols-outlined">add_ad</span> Add Education Detail</li>
+			<li class="sidebar-list-item" onclick="ViewEducationDetail()"><span class="material-symbols-outlined">post</span> View & Edit Education Detail</li>
+			
+			<li class="sidebar-list-item" onclick="AddWorkExperience()"><span class="material-symbols-outlined">add_ad</span> Add Work Experience</li>
+			<li class="sidebar-list-item" onclick="ViewWorkExperience()"><span class="material-symbols-outlined">post</span> View & Edit Work Experience</li>
+			
+			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
+			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
+						
+			<li class="sidebar-list-item" onclick="ViewJobPost()"><span class="material-symbols-outlined">work</span> View & Apply Job Post</li>
+			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
+			
+		</ul>
+	</aside>
+	
+	 <!-- end menu on the left -->
         <!-- Main Content -->
         <main class="main-container">
             <div class="main-title">
@@ -63,6 +94,7 @@
                 <!-- Job posts will be loaded here -->
             </div>
         </main>
+		<!-- end main content-->
     </div>
 
     <script>
@@ -138,6 +170,67 @@
                 console.error('Error applying for job:', error);
                 alert('Error submitting application: ' + error.message);
             }
+        }
+		
+		document.addEventListener('DOMContentLoaded', async () => {
+			const response = await fetch('/applicant/dashboard/details');
+			console.log('Response status:', response.status);
+			if (response.ok) {
+				const applicantDetails = await response.json();
+				console.log('Fetched data:', applicantDetails);
+				document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+			} else {
+				 console.error('Failed to fetch applicant details');
+			}
+		});
+		
+		function signOut() {
+			
+			sessionStorage.clear(); // clear client session
+			
+			// check clear success or not then redirect to related page
+			if (sessionStorage.length === 0) {
+			window.location.href = '/signedOut.html'; // Redirect to signedOut.html if clearing was successful
+		} else {
+			console.error('Failed to clear session storage.');
+		}
+			
+		}
+		
+		function showDashBoard() {
+            window.location.href = '/ApplicantDashboard.html';
+        }
+
+        function AddEducationDetail() {
+            window.location.href = '/AddEducationDetail.html';
+        }
+
+        function ViewEducationDetail() {
+            window.location.href = '/CheckEducationDetail.html';
+        }
+
+        function AddWorkExperience() {
+            window.location.href = '/AddWorkExperience.html';
+        }
+
+        function ViewWorkExperience() {
+            window.location.href = '/CheckWorkExperience.html';
+        }
+
+        function AddPreferredJob() {
+            window.location.href = '/AddPreferredJob.html';
+        }
+		
+		function ViewPreferredJob() {
+            window.location.href = '/CheckPreferredJob.html';
+        }
+		
+		function ViewJobPost() {
+            window.location.href = '/ApplicantJobPosts.html';
+        }
+		
+		function ViewApplicantDetail() {
+            window.location.href = '/CheckApplicantDetail.html';
         }
 
         // load jobs when page loads

@@ -12,71 +12,31 @@ const pool = mysql.createPool({
 	queueLimit: 0
 });
 
-// If you have any predefined queries or helper functions in db.js, they should be updated:
-const queries = {
-	// Update any applicant-related queries
-	getApplicantById: `
-		SELECT 
-			a.*,
-			d.Degree_Name,
-			m.Major_Name
-		FROM applicant_table a
-		LEFT JOIN Degree_Table d ON a.degree_ID = d.Degree_ID
-		LEFT JOIN Major_Table m ON a.major_ID = m.Major_ID
-		WHERE a.Applicant_ID = ?`,
-
-	createApplicant: `
-		INSERT INTO applicant_table 
-		(Applicant_ID, First_Name, Last_Name, Email, Phone_Num, Password, DOB, degree_ID, major_ID) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-
-	updateApplicant: `
-		UPDATE applicant_table 
-		SET First_Name = ?, 
-			Last_Name = ?, 
-			Email = ?, 
-			Phone_Num = ?, 
-			DOB = ?,
-			degree_ID = ?,
-			major_ID = ?
-		WHERE Applicant_ID = ?`
-};
-
-// If you have any validation functions
-const validateApplicant = (applicant) => {
-	return {
-		isValid: true,
-		// Add validation for degree_ID and major_ID
-		degree_ID: applicant.degree_ID,
-		major_ID: applicant.major_ID,
-		// ... other fields
-	};
-};
-
-// Test the connection
-pool.getConnection()
-	.then(connection => {
-		console.log('Successfully connected to MySQL database team5dbv2');
-		connection.release();
-	})
-	.catch(err => {
-		console.error('Error connecting to the database:', err);
-	});
-
-// let other files use the database
+// Export the pool and helper functions
 module.exports = {
-	// run database commands
-	query: async (sql, params) => {
-		try {
-			const [results] = await pool.execute(sql, params);
-			return results;
-		} catch (error) {
-			console.error('Database query error:', error);
-			console.error('Failed SQL:', sql);
-			console.error('Failed params:', params);
-			throw error;
-		}
+	// Get a connection from the pool
+	getConnection: () => {
+		return pool.getConnection();
 	},
-	queries,
-	validateApplicant
+	
+	// Run database queries
+	query: async (sql, values) => {
+		const [results] = await pool.execute(sql, values);
+		return results;
+	},
+
+	// Begin a transaction
+	beginTransaction: async (connection) => {
+		await connection.beginTransaction();
+	},
+
+	// Commit a transaction
+	commit: async (connection) => {
+		await connection.commit();
+	},
+
+	// Rollback a transaction
+	rollback: async (connection) => {
+		await connection.rollback();
+	}
 };

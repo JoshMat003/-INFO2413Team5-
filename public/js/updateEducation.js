@@ -2,7 +2,6 @@ console.log('updateEducation.js script has been loaded');
 
 document.addEventListener('DOMContentLoaded', async () => {
     const applicantDetailsResponse = await fetch('/education/details');
-	console.log('Applicant Details Response status:', applicantDetailsResponse.status);
 	
 	if(applicantDetailsResponse.ok) {
     const applicantDetails = await applicantResponse.json();

@@ -1,0 +1,100 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+    background-color: #1e1e2e;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+header{
+    width: 100%;
+    background-color: #252538;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    color: #ffffff;
+    font-size: 20px;
+}
+
+nav a {
+    color: #ffffff;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 18px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+main {
+    width: 90%;
+    max-width: 1200px;
+    margin-top: 40px;
+}
+
+.welcome-text{
+    background-color: #2b2b3c;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.Options-Menu {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.Options-Menu img {
+    width: 30%;
+    border-radius: 10px;
+}
+
+.pspacing {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #2b2b3c;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.Button-Menu {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+footer {
+    margin-top: 40px;
+    padding: 20px;
+    width: 100%;
+    background-color: #252538;
+    text-align: center;
+}

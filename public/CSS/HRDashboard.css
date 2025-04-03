@@ -210,3 +210,75 @@ body {
 .upload-button .material-symbols-outlined {
     font-size: 20px;
 }
+
+/* Notification Styles */
+.notifications-container {
+    padding: 20px;
+}
+
+.notification-item {
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.notification-item.unread {
+    border-left: 4px solid #4CAF50;
+}
+
+.notification-content {
+    flex-grow: 1;
+}
+
+.notification-content h3 {
+    margin: 0 0 8px 0;
+    color: var(--text-color);
+}
+
+.notification-content p {
+    margin: 0 0 5px 0;
+    color: var(--text-secondary);
+}
+
+.notification-content small {
+    color: var(--text-muted);
+}
+
+.mark-read-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.mark-read-btn:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+}
+
+/* Notification Bell Badge */
+#notificationBell {
+    position: relative;
+    cursor: pointer;
+}
+
+#notificationBell.has-notifications::after {
+    content: attr(data-count);
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff4444;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+}

@@ -1,6 +1,6 @@
-let allApplications = []; // Store all applications
+let allApplications = []; 
 
-// Add this helper function for client-side filtering
+
 function shouldDisplayApplication(app, filters) {
     if (filters.jobTitle && !app.job_title.toLowerCase().includes(filters.jobTitle.toLowerCase())) {
         return false;
@@ -56,7 +56,6 @@ async function loadAllApplications() {
     try {
         const response = await fetch('/hr/applications');
         allApplications = await response.json();
-        console.log('Total applications loaded:', allApplications.length);
         displayApplications(allApplications);
     } catch (error) {
         console.error('Error loading applications:', error);
@@ -70,7 +69,6 @@ function handleSearch() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
     
     if (!allApplications.length) {
-        console.log('No applications loaded');
         return;
     }
 

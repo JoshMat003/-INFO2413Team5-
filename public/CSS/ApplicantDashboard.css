@@ -117,8 +117,11 @@ body {
 }
 
 .main-title {
-    display:flex;
+    display: flex;
     justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 20px;
 }
 
 .main-cards {
@@ -168,4 +171,111 @@ body {
 
 .card-inner > .material-icons-outlined {
     font-size: 45px;
+}
+
+/* Notification Styles */
+.notifications-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+#notifications-view {
+    width: 100%;
+    padding: 20px;
+}
+
+.notification-item {
+    background-color: #263043;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notification-item.unread {
+    border-left: 4px solid #4CAF50;
+}
+
+.notification-content {
+    flex-grow: 1;
+    padding: 0 15px;
+}
+
+.notification-content h3 {
+    margin: 0 0 8px 0;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.notification-content p {
+    margin: 0 0 8px 0;
+    color: #9e9ea4;
+    font-size: 14px;
+}
+
+.notification-content small {
+    color: #666;
+    font-size: 12px;
+}
+
+.mark-read-btn {
+    background: none;
+    border: none;
+    color: #4CAF50;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    transition: background-color 0.3s ease;
+}
+
+.mark-read-btn:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+/* Notification Bell Badge */
+#notificationBell {
+    position: relative;
+    cursor: pointer;
+}
+
+#notificationBell.has-notifications::after {
+    content: attr(data-count);
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff4444;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Back Button */
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #2962ff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #1e4bd8;
 }

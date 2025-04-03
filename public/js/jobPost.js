@@ -1,53 +1,52 @@
 // load job posts when page loads
-// document.addEventListener('DOMContentLoaded', loadJobPosts);
+
 
 // Only load jobs when page loads
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Page loaded, initializing...');
-    
-    // Load categories first
-    await loadJobCategories();
-    
-    // Load initial jobs
-    await loadAllJobs();
-    
-    // Set up event listeners
-    const searchInput = document.getElementById('searchInput');
-    const locationSelect = document.getElementById('location');
-    const categorySelect = document.getElementById('jobCategory');
-    const minSalaryInput = document.getElementById('minSalary');
-    const maxSalaryInput = document.getElementById('maxSalary');
+    try {
+        // Load categories first
+        await loadJobCategories();
+        
+        // Load initial jobs using the search endpoint
+        await handleSearch();
+        
+        // Set up event listeners
+        const searchInput = document.getElementById('searchInput');
+        const locationSelect = document.getElementById('location');
+        const categorySelect = document.getElementById('jobCategory');
+        const minSalaryInput = document.getElementById('minSalary');
+        const maxSalaryInput = document.getElementById('maxSalary');
 
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(handleSearch, 300));
-    }
-    if (locationSelect) {
-        locationSelect.addEventListener('change', handleSearch);
-    }
-    if (categorySelect) {
-        categorySelect.addEventListener('change', handleSearch);
-    }
-    if (minSalaryInput) {
-        minSalaryInput.addEventListener('input', debounce(handleSearch, 300));
-    }
-    if (maxSalaryInput) {
-        maxSalaryInput.addEventListener('input', debounce(handleSearch, 300));
+        if (searchInput) {
+            searchInput.addEventListener('input', debounce(handleSearch, 300));
+        }
+        if (locationSelect) {
+            locationSelect.addEventListener('change', handleSearch);
+        }
+        if (categorySelect) {
+            categorySelect.addEventListener('change', handleSearch);
+        }
+        if (minSalaryInput) {
+            minSalaryInput.addEventListener('input', debounce(handleSearch, 300));
+        }
+        if (maxSalaryInput) {
+            maxSalaryInput.addEventListener('input', debounce(handleSearch, 300));
+        }
+    } catch (error) {
+        console.error('Error during initialization:', error);
     }
 });
 
-// Function to load and display all jobs
+// load and display all jobs
 async function loadAllJobs() {
     try {
-        console.log('Fetching all jobs...');
         const response = await fetch('/applicant/available-jobs');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const jobPosts = await response.json();
-        console.log('Jobs received from server:', jobPosts);
         
         if (!jobPosts || jobPosts.length === 0) {
-            console.log('No jobs received from server');
             document.getElementById('job-posts-container').innerHTML = 
                 '<p style="color: white; text-align: center; padding: 20px;">No jobs available at this time.</p>';
             return;
@@ -63,49 +62,48 @@ async function loadAllJobs() {
 
 // Handle search functionality
 async function handleSearch() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-    const location = document.getElementById('location').value.toLowerCase();
-    const minSalary = document.getElementById('minSalary').value;
-    const maxSalary = document.getElementById('maxSalary').value;
-    const selectedCategory = document.getElementById('jobCategory').value;
-
     try {
-        const response = await fetch('/applicant/available-jobs');
-        const jobPosts = await response.json();
-        console.log('Jobs received:', jobPosts); // Debug log
+        const searchTerm = document.getElementById('searchInput')?.value.toLowerCase().trim() || '';
+        const location = document.getElementById('location')?.value || '';
+        const minSalary = document.getElementById('minSalary')?.value || '';
+        const maxSalary = document.getElementById('maxSalary')?.value || '';
+        const selectedCategory = document.getElementById('jobCategory')?.value || '';
 
-        const filteredJobs = jobPosts.filter(job => {
-            const matchesCategory = !selectedCategory || 
-                job.job_category_id.toString() === selectedCategory;
+        const params = new URLSearchParams();
+        if (location) params.append('location', location);
+        if (minSalary) params.append('minSalary', minSalary);
+        if (maxSalary) params.append('maxSalary', maxSalary);
+        if (selectedCategory) params.append('jobCategory', selectedCategory);
 
-            const matchesSearch = !searchTerm || 
-                (job.job_title?.toLowerCase() || '').includes(searchTerm) ||
-                (job.job_position?.toLowerCase() || '').includes(searchTerm) ||
-                (job.JobCategory_Name?.toLowerCase() || '').includes(searchTerm) ||
-                (job.job_post_description?.toLowerCase() || '').includes(searchTerm);
+        const url = `/api/jobs/search${params.toString() ? '?' + params.toString() : ''}`;
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to fetch jobs. Status: ${response.status}. ${errorText}`);
+        }
 
-            const matchesLocation = !location || 
-                (job.city?.toLowerCase() || '').includes(location) || 
-                (job.province?.toLowerCase() || '').includes(location);
+        const jobs = await response.json();
 
-            const salary = Number(job.annual_salary) || 0;
-            const matchesMinSalary = !minSalary || salary >= Number(minSalary);
-            const matchesMaxSalary = !maxSalary || salary <= Number(maxSalary);
-
-            return matchesSearch && matchesLocation && matchesMinSalary && 
-                   matchesMaxSalary && matchesCategory;
-        });
+        // Filter by search term locally
+        const filteredJobs = searchTerm ? jobs.filter(job => 
+            (job.job_title?.toLowerCase() || '').includes(searchTerm) ||
+            (job.job_position?.toLowerCase() || '').includes(searchTerm) ||
+            (job.JobCategory_Name?.toLowerCase() || '').includes(searchTerm) ||
+            (job.job_post_description?.toLowerCase() || '').includes(searchTerm)
+        ) : jobs;
 
         displayJobs(filteredJobs);
     } catch (error) {
         console.error('Error during search:', error);
+        document.getElementById('job-posts-container').innerHTML = 
+            '<p style="color: white; text-align: center; padding: 20px;">Error searching jobs. Please try again later.</p>';
     }
 }
 
 // Display jobs in the container
 function displayJobs(jobs) {
     const container = document.getElementById('job-posts-container');
-    console.log('Total jobs to display:', jobs.length);
     
     if (!jobs || jobs.length === 0) {
         container.innerHTML = '<p style="color: white; text-align: center; padding: 20px;">No jobs found matching your search.</p>';
@@ -114,15 +112,18 @@ function displayJobs(jobs) {
 
     container.innerHTML = '';
     jobs.forEach((job, index) => {
-        console.log(`Processing job ${index + 1}:`, job);
+        // Get category name from the job data or try to find it in the dropdown
+        let categoryName = job.JobCategory_Name;
+        if (!categoryName && job.job_category_id) {
+            const categorySelect = document.getElementById('jobCategory');
+            const categoryOption = categorySelect?.querySelector(`option[value="${job.job_category_id}"]`);
+            categoryName = categoryOption?.textContent || 'Not specified';
+        }
 
-        const jobCard = document.createElement('div');
-        jobCard.className = 'job-post-card';
-        
         const formattedJob = {
             title: job.job_title || 'Not specified',
             position: job.job_position || 'Not specified',
-            category: job.JobCategory_Name || 'Not specified',
+            category: categoryName || 'Not specified',
             location: `${job.city || ''}${job.province ? `, ${job.province}` : 'Not specified'}`,
             salary: job.annual_salary ? `$${Number(job.annual_salary).toLocaleString()}` : 'Not specified',
             dueDate: job.application_due_date ? new Date(job.application_due_date).toLocaleDateString() : 'Not specified',
@@ -131,6 +132,9 @@ function displayJobs(jobs) {
             description: job.job_post_description || 'No description available'
         };
 
+        const jobCard = document.createElement('div');
+        jobCard.className = 'job-post-card';
+        
         jobCard.innerHTML = `
             <h3 class="job-title">${formattedJob.title}</h3>
             <div class="job-details">
@@ -168,38 +172,35 @@ function formatExperience(experience) {
 // Handle job application
 async function applyForJob(jobId) {
     try {
-        const response = await fetch('/applicant/apply', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ jobId })
-        });
-
-        if (response.ok) {
-            alert('Application submitted successfully!');
-        } else {
-            const data = await response.json();
-            throw new Error(data.error || 'Failed to submit application');
+        // Check if user is logged in
+        const response = await fetch('/applicant/checkLogin');
+        const data = await response.json();
+        
+        if (!data.loggedIn) {
+            alert('Please log in to apply for jobs');
+            window.location.href = '/ApplicantLogin_v1.html';
+            return;
         }
+        
+        // If logged in, redirect to application form
+        window.location.href = `/applicant/apply.html?job_id=${jobId}`;
     } catch (error) {
-        console.error('Error applying for job:', error);
-        alert('Error submitting application: ' + error.message);
+        console.error('Error:', error);
+        alert('Error checking login status');
     }
 }
 
 // Add this function to load categories
 async function loadJobCategories() {
     try {
-        console.log('Fetching categories from HR route...');
-        const response = await fetch('/hr/job-categories');
+        const response = await fetch('/api/jobs/categories');
         
         if (!response.ok) {
+            const errorText = await response.text();
             throw new Error(`Failed to fetch categories. Status: ${response.status}`);
         }
 
         const categories = await response.json();
-        console.log('Categories received:', categories);
 
         const categorySelect = document.getElementById('jobCategory');
         if (!categorySelect) {
@@ -217,13 +218,11 @@ async function loadJobCategories() {
                 option.textContent = category.JobCategory_Name;
                 categorySelect.appendChild(option);
             });
-            console.log('Categories loaded successfully');
         } else {
-            console.log('No categories found');
             categorySelect.innerHTML = '<option value="">No categories available</option>';
         }
     } catch (error) {
-        console.error('Error loading categories:', error);
+        console.error('Error in loadJobCategories:', error);
         const categorySelect = document.getElementById('jobCategory');
         if (categorySelect) {
             categorySelect.innerHTML = '<option value="">Error loading categories</option>';

@@ -135,6 +135,7 @@
 .profile-image-section {
     text-align: center;
     margin-bottom: 30px;
+    position: relative;
 }
 
 #profileImagePreview {
@@ -144,6 +145,10 @@
     object-fit: cover;
     margin-bottom: 15px;
     border: 3px solid #fff;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #f0f0f0;
 }
 
 .upload-label {
@@ -156,11 +161,12 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-top: 10px;
 }
 
 .upload-label:hover {
     background-color: #45a049;
-} 
+}
 
 .applicant-card {
     background: white;

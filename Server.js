@@ -13,14 +13,32 @@ const loginRoutes = require('./routes/loginRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const hrRoutes = require('./routes/hrRoutes');
 const signedOutRoute = require('./routes/signedOutRoute');
+const jobRoutes = require('./routes/jobRoutes');
 
 // start website
 const app = express();
 const port = 3000;
 
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+	next();
+});
+
 // set up form handling
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Static file serving
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/CSS', express.static(path.join(__dirname, 'public/CSS')));
+app.use('/js', express.static(path.join(__dirname, 'public/js')));
+
+// Add CORS headers
+app.use((req, res, next) => {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+	next();
+});
 
 // set up login memory
 app.use(session({
@@ -40,6 +58,9 @@ app.get('/login.html', (req, res) => {
 	res.sendFile(path.join(__dirname, 'public/login.html'));
 });
 
+// Mount job routes before other routes to ensure proper handling
+app.use('/api/jobs', jobRoutes);
+
 // connect pages to their code
 app.use('/applicant', applicantRoutes);
 app.use('/education', educationRoutes);
@@ -50,38 +71,10 @@ app.use('/admin', adminRoutes);
 app.use('/hr', hrRoutes);
 app.use('/signout', signedOutRoute);
 
-// where to find static files
-app.use(express.static('public'));
-app.use('/CSS', express.static(path.join(__dirname, 'CSS')));
-
-// If you have any validation middleware for applicant routes
-const validateApplicantData = (req, res, next) => {
-	const { firstName, lastName, email, phoneNum, dob, degreeId, majorId } = req.body;
-	
-	// Add validation for the new fields
-	if (!degreeId || !majorId) {
-		return res.status(400).json({ error: 'Degree and Major are required' });
-	}
-	
-	// ... other validations ...
-	next();
-};
-
-// If you have any route setup that uses this middleware
-app.use('/applicant', validateApplicantData);
-
-// If you have any direct routes in server.js (though they should ideally be in route files)
-app.post('/api/applicant/register', validateApplicantData, async (req, res) => {
-	// ... registration logic including degree_ID and major_ID ...
-});
-
-// If you have any error handling middleware that deals with applicant data
+// Error handling middleware
 app.use((err, req, res, next) => {
-	if (err.type === 'ApplicantValidationError') {
-		// Handle validation errors including degree and major fields
-		return res.status(400).json({ error: err.message });
-	}
-	next(err);
+	console.error('Error:', err);
+	res.status(500).json({ error: 'Internal server error' });
 });
 
 // start the website
