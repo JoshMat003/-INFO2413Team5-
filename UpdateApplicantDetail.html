@@ -1,0 +1,271 @@
+<!DOCTYPE html> <!-- v2-->
+<html lang="en">
+<head>
+	<meta charset="UTF8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Update Education Details</title>
+	 <!-- google font -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+     <!-- icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	
+	<!-- css file-->
+	<link rel="stylesheet" href="/CSS/ApplicantDashboard.css">
+	
+</head>
+
+
+<body>
+<div class="grid-container">
+	<!-- top bar -->
+	<header class="header">
+		<div class="header-right">                 
+			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+		</div>
+	</header>
+	<!-- end top bar -->
+	
+		
+	<!-- menu on the left -->
+	<aside id="sidebar">
+		<div class="sidebar-title">
+			<div class="sidebar-brand">
+				WELCOME <br> <span id="applicantFirstName"></span>!
+			</div>
+			
+		</div>
+
+		<ul class="sidebar-list">
+			<li class="sidebar-list-item" onclick="showDashBoard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+				
+			<li class="sidebar-list-item" onclick="AddEducationDetail()"><span class="material-symbols-outlined">add_ad</span> Add Education Detail</li>
+			<li class="sidebar-list-item" onclick="ViewEducationDetail()"><span class="material-symbols-outlined">post</span> View & Edit Education Detail</li>
+			
+			<li class="sidebar-list-item" onclick="AddWorkExperience()"><span class="material-symbols-outlined">add_ad</span> Add Work Experience</li>
+			<li class="sidebar-list-item" onclick="ViewWorkExperience()"><span class="material-symbols-outlined">post</span> View & Edit Work Experience</li>
+			
+			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
+			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
+			
+			<li class="sidebar-list-item" onclick="ViewJobPost()"><span class="material-symbols-outlined">work</span> View & Apply Job Post</li>				
+			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
+		</ul>
+	</aside>
+	 <!-- end menu on the left -->
+			
+	<!-- main stuff -->
+	<main class="main-container">
+		
+		<!-- home screen -->
+		<div id="dashboard-view">
+			
+			<div class="main-title">
+			<h2>Update Education Details</h2>
+			</div>
+			
+		</div>	
+		<!-- end home screen-->	
+	
+		
+		<form id="updateApplicantForm">
+			
+			<blockquote>
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" required>
+			</blockquote>
+			
+			<blockquote>
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" required>
+			</blockquote>
+			
+			<blockquote>
+			<label for="dateOfBirth">Date of Birth:</label>
+            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+			</blockquote>
+			
+			<blockquote>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+			</blockquote>
+			
+			<blockquote>
+            <label for="phoneNum">Phone Number:</label>
+            <input type="tel" id="phoneNum" name="phoneNum" required>
+			</blockquote>
+			
+			<blockquote>
+			<input type="Submit" value="Update">
+			<button type="button" id="CancelButton">Cancel Update</button>
+			</blockquote>
+		</form>
+		
+	</main>
+	<!-- end main stuff -->
+	
+</div>		
+	<script>
+	document.addEventListener('DOMContentLoaded', async () => {
+		const response = await fetch('/applicant/sessionDetails');
+			console.log('Response status:', response.status);
+			if (response.ok) {
+				const applicantDetails = await response.json();
+				console.log('Fetched data:', applicantDetails);
+				document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+			} else {
+				 console.error('Failed to fetch applicant details');
+			}	
+		
+		// Get target applicant details by Applicant_ID ----------------------/
+		const applicantDetailsResponse = await fetch('/applicant/details');
+		if (!applicantDetailsResponse.ok) { // error handle
+			alert('Failed to fetch education details.');
+			return;
+		}
+		
+		const applicantData = await applicantDetailsResponse.json(); 
+		
+		// load applicant data from educationData and display it in related html id ---------------/
+					
+		document.getElementById('firstName').value = applicantData.Applicant_Firstname;
+			console.log('Applicant_Firstname value is :', applicantData.Applicant_Firstname);
+		
+		document.getElementById('lastName').value = applicantData.Applicant_LastName;
+			console.log('Applicant_LastName value is :', applicantData.Applicant_LastName);
+			
+		document.getElementById('dateOfBirth').value = applicantData.Applicant_DateOfBirth;
+			console.log('Applicant_DateOfBirth value is :' , applicantData.Applicant_DateOfBirth);
+			
+		document.getElementById('email').value = applicantData.Applicant_Email;
+			console.log('Applicant_Email value is :', applicantData.Applicant_Email);
+			
+		document.getElementById('phoneNum').value = applicantData.Applicant_PhoneNum;
+			console.log('Applicant_phoneNum value is :', applicantData.Applicant_PhoneNum);
+			
+			
+	// Update updated education information to Education_Table -----------------/		
+	document.getElementById('updateApplicantForm').addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+        
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries()); // Convert form data to an object
+
+        try {
+            const updateResponse = await fetch('/applicant/updateApplicantDetail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), // Send the form data as JSON
+            });
+
+            if (updateResponse.ok) {
+                alert('Applicant details updated successfully!');
+                window.location.href = 'CheckApplicantDetail.html'; // Redirect after update
+            } else {
+                alert('Failed to update education details.');
+            }
+        } catch (error) {
+            alert('An error occurred while updating the education details.');
+            console.error(error);
+        }
+    });
+		
+		// Cancel update - Allow user to cancel applicant update ------------------/
+	document.getElementById('CancelButton').addEventListener('click', (event) => {
+        window.location.href = 'CheckApplicantDetail.html';
+		});
+	});
+	
+	async function checkLogin() {
+			try {
+				const checkLoginResponse = await fetch('/applicant/checkLogin');
+				console.log('checkLoginResponse:', checkLoginResponse);
+				
+				if (checkLoginResponse.ok) {
+					const data = await checkLoginResponse.json();
+					if (data.loggedIn) {
+						console.log('Applicant Login Check Valid.');
+					} else {
+						console.log('Applicant Login Check Invalid. Redirecting to login.');
+						window.location.href = '/login.html'; // Redirect to login.html
+					}
+				} else {
+					console.log('Applicant Login Check Invalid. Redirecting to login.');
+					window.location.href = '/login.html'; // Handle other non-200 responses
+				}
+			} catch (error) {
+				console.error('Error checking Applicant login:', error);
+				window.location.href = '/login.html'; // Redirect on error as well
+			}
+		}
+		
+		
+		
+		async function signOut() {
+			try {
+				const signOutResponse = await fetch('/applicant/signOut', {
+					method: 'POST'
+				});
+				
+				if (signOutResponse.ok) {
+					sessionStorage.clear(); // clear client session
+					// check clear success or not then redirect to related page
+					if (sessionStorage.length === 0) {
+					window.location.href = '/signedOut.html'; // Redirect to signedOut.html if clearing was successful
+					} else {
+						console.error('Failed to clear client session storage.');
+					}
+				} else {
+					console.error('Failed to clear server session.');
+				}
+			} catch (error) {
+				console.error('Error during sign out : ', error);
+			}
+			
+		}
+	
+		function showDashBoard() {
+				window.location.href = '/ApplicantDashboard.html';
+		}
+
+		function AddEducationDetail() {
+			window.location.href = '/AddEducationDetail.html';
+		}
+
+		function ViewEducationDetail() {
+			window.location.href = '/CheckEducationDetail.html';
+		}
+
+		function AddWorkExperience() {
+			window.location.href = '/AddWorkExperience.html';
+		}
+
+		function ViewWorkExperience() {
+			window.location.href = '/CheckWorkExperience.html';
+		}
+
+		function AddPreferredJob() {
+			window.location.href = '/AddPreferredJob.html';
+		}
+		
+		function ViewPreferredJob() {
+			window.location.href = '/checkPreferredJob.html';
+		}
+		
+		function ViewJobPost() {
+				window.location.href = '/ApplicantJobPosts.html';
+		}
+		
+		function ViewApplicantDetail() {
+			window.location.href = '/CheckApplicantDetail.html';
+		}
+		
+		window.onload = checkLogin;
+	</script>
+</body>
+
+</html>
+
+
