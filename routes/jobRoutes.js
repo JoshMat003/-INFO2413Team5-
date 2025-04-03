@@ -69,68 +69,49 @@ router.get('/jobs/:id', async (req, res) => {
 
 router.get('/applicant/available-jobs', async (req, res) => {
     try {
-        const {
-            dueDate,
-            jobCategory,
-            location,
-            minSalary,
-            maxSalary
-        } = req.query;
+        const { search } = req.query;
 
-        let query = 
-                `SELECT 
-                    j.job_id,
-                    j.job_title,
-                    j.job_category_id,
-                    jc.JobCategory_ID,
-                    jc.JobCategory_Name,
-                    j.job_position,
-                    j.annual_salary,
-                    j.city,
-                    j.province,
-                    j.job_post_description,
-                    j.application_due_date,
-                    j.contact_email,
-                    j.minimum_education,
-                    j.required_experience
-                FROM jobpost_table AS j
-                INNER JOIN jobcategory_table AS jc 
-                    ON j.job_category_id = jc.JobCategory_ID
-                WHERE 1=1`
-            ;
+        let query = `
+            SELECT 
+                j.job_id,
+                j.job_title,
+                j.job_category_id,
+                jc.JobCategory_Name,
+                j.job_position,
+                j.annual_salary,
+                j.city,
+                j.province,
+                j.job_post_description,
+                j.application_due_date,
+                j.contact_email,
+                j.minimum_education,
+                j.required_experience
+            FROM jobpost_table AS j
+            INNER JOIN jobcategory_table AS jc 
+                ON j.job_category_id = jc.JobCategory_ID
+            WHERE 1=1
+        `;
         
         const values = [];
 
-        if (dueDate) {
-            query += ` AND DATE(j.application_due_date) <= ?`;
-            values.push(dueDate);
-        }
-
-        if (jobCategory) {
-            query += ` AND j.job_category_id = ?`;
-            values.push(jobCategory);
-        }
-
-        if (location) {
-            query += ` AND j.city = ?`;
-            values.push(location);
-        }
-
-        if (minSalary) {
-            query += ` AND j.annual_salary >= ?`;
-            values.push(minSalary);
-        }
-
-        if (maxSalary) {
-            query += ` AND j.annual_salary <= ?`;
-            values.push(maxSalary);
+        if (search) {
+            query += ` AND (
+                j.job_title LIKE ? OR
+                j.job_position LIKE ? OR
+                j.city LIKE ? OR
+                j.province LIKE ? OR
+                j.job_post_description LIKE ? OR
+                jc.JobCategory_Name LIKE ?
+            )`;
+            const searchPattern = `%${search}%`;
+            values.push(searchPattern, searchPattern, searchPattern, 
+                       searchPattern, searchPattern, searchPattern);
         }
 
         query += ` ORDER BY j.application_due_date DESC`;
 
         console.log('Executing query:', query);
         const results = await db.query(query, values);
-        console.log('First result row:', results[0]);
         res.json(results);
     } catch (error) {
         console.error('Error fetching job posts:', error);

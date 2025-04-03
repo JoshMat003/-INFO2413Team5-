@@ -5,6 +5,10 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs').promises;
 
+// Add this before setting up routes
+const uploadDir = path.join(__dirname, '../public/uploads/profile-images');
+fs.mkdir(uploadDir, { recursive: true }).catch(console.error);
+
 // Configure multer for file upload
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -117,8 +121,6 @@ router.get('/job-posts', async (req, res) => {
             SELECT 
                 j.job_id,
                 j.job_title,
-                j.job_category_id,
-                jc.JobCategory_Name,
                 j.job_position,
                 j.annual_salary,
                 j.city,
@@ -127,16 +129,15 @@ router.get('/job-posts', async (req, res) => {
                 j.application_due_date,
                 j.contact_email,
                 j.minimum_education,
-                j.required_experience
-            FROM jobpost_table AS j
-            JOIN jobcategory_table AS jc 
-              ON j.job_category_id = jc.JobCategory_ID
-            ORDER BY j.application_due_date DESC`
-            ;
+                j.required_experience,
+                j.job_category_id,
+                jc.JobCategory_Name
+            FROM jobpost_table j
+            LEFT JOIN jobcategory_table jc ON j.job_category_id = jc.JobCategory_ID
+            ORDER BY j.application_due_date DESC`;
         
-        console.log('Fetching job posts...');
         const results = await db.query(query);
-        console.log('Job posts results:', results);
+        console.log('First job post result:', results[0]); // Debug log
         res.json(results);
     } catch (error) {
         console.error('Error fetching job posts:', error);
@@ -187,10 +188,15 @@ router.get('/session-info', async (req, res) => {
 // get one job
 router.get('/job-posts/:id', async (req, res) => {
     try {
-        const result = await db.query(
-            'SELECT * FROM jobpost_table WHERE job_id = ?',
-            [req.params.id]
-        );
+        const query = `
+            SELECT 
+                j.*,
+                jc.JobCategory_Name
+            FROM jobpost_table j
+            LEFT JOIN jobcategory_table jc ON j.job_category_id = jc.JobCategory_ID
+            WHERE j.job_id = ?`;
+        
+        const result = await db.query(query, [req.params.id]);
         
         if (result.length > 0) {
             res.json(result[0]);
@@ -312,18 +318,14 @@ router.put('/update-profile', upload.single('profileImage'), async (req, res) =>
         return res.status(401).json({ error: 'Not authorized' });
     }
 
-    const { firstName, lastName, email, dateOfBirth, currentPassword, newPassword } = req.body;
-
     try {
-        // First verify current password
-        const verifyQuery = 'SELECT HR_PasswordHash FROM hrstaff_table WHERE HR_ID = ?';
-        const [verifyResult] = await db.query(verifyQuery, [req.session.userId]);
-        
-        if (!verifyResult || verifyResult.HR_PasswordHash !== currentPassword) {
-            return res.status(401).json({ error: 'Current password is incorrect' });
+        let profileImagePath = null;
+        if (req.file) {
+            // Store only the filename, not the full path
+            profileImagePath = req.file.filename;
         }
 
-        // Build update query
+        // Build the update query
         let query = `
             UPDATE hrstaff_table 
             SET 
@@ -332,30 +334,34 @@ router.put('/update-profile', upload.single('profileImage'), async (req, res) =>
                 HR_Email = ?,
                 HR_DOB = ?
         `;
-        let values = [firstName, lastName, email, dateOfBirth];
+        let values = [
+            req.body.firstName,
+            req.body.lastName,
+            req.body.email,
+            req.body.dateOfBirth
+        ];
 
-        // Add profile image path if uploaded
-        if (req.file) {
+        // Add profile image to update if uploaded
+        if (profileImagePath) {
             query += ', HR_ProfileImage = ?';
-            values.push('/uploads/profile-images/' + req.file.filename);
+            values.push(profileImagePath);
         }
 
-        // Add password update if new password provided
-        if (newPassword) {
+        // Add password update if provided
+        if (req.body.newPassword) {
             query += ', HR_PasswordHash = ?';
-            values.push(newPassword);
+            values.push(req.body.newPassword);
         }
 
         query += ' WHERE HR_ID = ?';
         values.push(req.session.userId);
 
-        // Execute update
         await db.query(query, values);
         
-        // Update session name
-        req.session.name = firstName;
-        
-        res.json({ message: 'Profile updated successfully' });
+        res.json({ 
+            message: 'Profile updated successfully',
+            profileImage: profileImagePath
+        });
     } catch (error) {
         console.error('Error updating HR profile:', error);
         res.status(500).json({ error: 'Failed to update profile' });
@@ -466,21 +472,45 @@ router.put('/applicant/profile', async (req, res) => {
     }
 });
 
-// Add this new route to get job categories
+// Update the job categories route
 router.get('/job-categories', async (req, res) => {
     try {
+        console.log('Fetching job categories...');
         const query = `
             SELECT 
                 JobCategory_ID,
                 JobCategory_Name
-            FROM jobcategory_table
+            FROM JobCategory_Table
             ORDER BY JobCategory_Name`;
         
         const categories = await db.query(query);
+        console.log('Categories found:', categories);
         res.json(categories);
     } catch (error) {
         console.error('Error fetching job categories:', error);
         res.status(500).json({ error: 'Failed to fetch job categories' });
+    }
+});
+
+// Update or add this route
+router.get('/available-jobs', async (req, res) => {
+    try {
+        console.log('Fetching available jobs with categories...');
+        
+        // Debug query to check tables
+        const debugQuery = `
+            SELECT jp.*, jc.JobCategory_Name
+            FROM JobPost_Table jp
+            INNER JOIN JobCategory_Table jc ON jp.JobCategory_ID = jc.JobCategory_ID
+            ORDER BY jp.Application_Due_Date DESC`;
+
+        const results = await db.query(debugQuery);
+        console.log('Query results:', results); // Debug log
+
+        res.json(results);
+    } catch (error) {
+        console.error('Error fetching available jobs:', error);
+        res.status(500).json({ error: 'Failed to fetch available jobs' });
     }
 });
 

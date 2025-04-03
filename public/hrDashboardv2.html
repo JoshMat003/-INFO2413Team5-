@@ -96,7 +96,7 @@
                             </div>
                         </div> 
 
-                        <div class="card">
+                        <div class="card" onclick="showProfileSettings()">
                             <div class="card-inner">
                                 <h3>Profile Settings</h3>
                                 <span class="material-symbols-outlined">settings</span>
@@ -237,6 +237,8 @@
                             <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
                         </button>
                     </div>
+                    <!-- Add an error message container -->
+                    <div id="profile-error-message" style="display: none; color: red; margin: 10px 0;"></div>
                     <form id="profileSettingsForm" class="profile-form">
                         <!-- Profile Image Section -->
                         <div class="form-group profile-image-section">

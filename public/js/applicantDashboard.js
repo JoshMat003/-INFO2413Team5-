@@ -72,4 +72,19 @@ async function submitApplication(event) {
         console.error('Error:', error);
         alert('Error submitting application');
     }
+
+    console.log('dashboard.js script has been loaded.');
+
+		document.addEventListener('DOMContentLoaded', async () => {
+			const response = await fetch('/applicant/dashboard/details');
+			console.log('Response status:', response.status);
+			if (response.ok) {
+				const applicantDetails = await response.json();
+				console.log('Fetched data:', applicantDetails);
+				document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+				document.getElementById('applicantID').innerHTML = applicantDetails.id; 
+			} else {
+				 console.error('Failed to fetch applicant details');
+			}
+		});
 } 
