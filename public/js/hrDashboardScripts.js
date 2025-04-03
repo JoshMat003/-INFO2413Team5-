@@ -33,6 +33,9 @@ function showJobPostForm() {
     // set submit action
     const form = document.getElementById('createJobForm');
     form.onsubmit = submitJobPost;
+
+    // Add this line at the end of the function
+    loadJobCategories();
 }
 
 // show home page
@@ -62,8 +65,6 @@ async function showJobPosts() {
         
         // Function to format experience requirement
         function formatExperience(experience) {
-            console.log('Raw experience value:', experience); // Add logging
-            
             if (!experience || experience === '') return 'Not specified';
             
             // Map the enum values to user-friendly strings
@@ -74,10 +75,7 @@ async function showJobPosts() {
                 'expert': 'Expert (10+ years)'
             };
             
-            const formattedExperience = experienceMap[experience.toLowerCase()];
-            console.log('Formatted experience:', formattedExperience); // Add logging
-            
-            return formattedExperience || experience;
+            return experienceMap[experience.toLowerCase()] || experience;
         }
         
         jobPosts.forEach(post => {
@@ -86,18 +84,25 @@ async function showJobPosts() {
             const postCard = document.createElement('div');
             postCard.className = 'job-post-card';
             postCard.innerHTML = `
-                <h3>${post.job_title}</h3>
-                <p><strong>Position:</strong> ${post.job_position}</p>
-                <p><strong>Location:</strong> ${post.city}, ${post.province}</p>
-                <p><strong>Salary:</strong> $${post.annual_salary.toLocaleString()}</p>
-                <p><strong>Due Date:</strong> ${dueDate}</p>
-                <p><strong>Education Required:</strong> ${post.minimum_education || 'Not specified'}</p>
-                <p><strong>Experience Required:</strong> ${formatExperience(post.required_experience)}</p>
-                <p><strong>Description:</strong> ${post.job_post_description}</p>
-                <p><strong>Contact:</strong> ${post.contact_email}</p>
-                <button onclick="editJobPost(${post.job_id})" class="edit-button">
-                    <span class="material-symbols-outlined">edit</span> Edit Job Post
-                </button>
+                <div class="job-title">
+                    <h3>${post.job_title}</h3>
+                </div>
+                <div class="job-details">
+                    <p><strong>Position:</strong> ${post.job_position || 'Not specified'}</p>
+                    <p><strong>Job Category:</strong> ${post.JobCategory_Name || 'Not specified'}</p>
+                    <p><strong>Location:</strong> ${post.city}, ${post.province}</p>
+                    <p><strong>Salary:</strong> $${post.annual_salary.toLocaleString()}</p>
+                    <p><strong>Due Date:</strong> ${dueDate}</p>
+                    <p><strong>Education Required:</strong> ${post.minimum_education || 'Not specified'}</p>
+                    <p><strong>Experience Required:</strong> ${formatExperience(post.required_experience)}</p>
+                    <p><strong>Description:</strong> ${post.job_post_description}</p>
+                    <p><strong>Contact:</strong> ${post.contact_email}</p>
+                </div>
+                <div class="job-actions">
+                    <button onclick="editJobPost(${post.job_id})" class="edit-button">
+                        <span class="material-symbols-outlined">edit</span> Edit Job Post
+                    </button>
+                </div>
             `;
             container.appendChild(postCard);
         });
@@ -292,6 +297,9 @@ async function editJobPost(jobId) {
         document.getElementById('job-posts-view').style.display = 'none';
         document.getElementById('job-post-form').style.display = 'block';
         document.querySelector('#job-post-form .main-title h2').textContent = 'Edit Job Post';
+
+        // Make sure categories are loaded
+        await loadJobCategories();
     } catch (error) {
         console.error('Error fetching job post:', error);
         alert('Error loading job post details');
@@ -344,5 +352,230 @@ async function updateJobPost(event, jobId) {
     } catch (error) {
         console.error('Error:', error);
         alert('Error updating job post: ' + error.message);
+    }
+}
+
+// show profile settings
+async function showProfileSettings() {
+    document.getElementById('dashboard-view').style.display = 'none';
+    document.getElementById('job-post-form').style.display = 'none';
+    document.getElementById('job-posts-view').style.display = 'none';
+    document.getElementById('applicants-view').style.display = 'none';
+    document.getElementById('profile-settings-view').style.display = 'block';
+
+    try {
+        const response = await fetch('/hr/session-info');
+        const profileData = await response.json();
+        
+        // Populate form fields
+        document.getElementById('hrFirstName').value = profileData.firstName || '';
+        document.getElementById('hrLastName').value = profileData.lastName || '';
+        document.getElementById('hrEmail').value = profileData.email || '';
+        document.getElementById('hrDOB').value = profileData.dateOfBirth?.split('T')[0] || '';
+        
+        // Set profile image if exists
+        const profileImagePreview = document.getElementById('profileImagePreview');
+        if (profileData.profileImage) {
+            profileImagePreview.src = `/uploads/profile-images/${profileData.profileImage}`;
+            profileImagePreview.onerror = function() {
+                console.error('Error loading profile image');
+                this.src = '/images/default-profile.png';
+            };
+        } else {
+            profileImagePreview.src = '/images/default-profile.png';
+        }
+
+        // Set up image preview
+        setupImagePreview();
+        
+        // attach form submit handler
+        document.getElementById('profileSettingsForm').onsubmit = updateProfileSettings;
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        showProfileError('Error loading profile data');
+    }
+}
+
+// handle image preview
+function setupImagePreview() {
+    const imageInput = document.getElementById('profileImage');
+    const imagePreview = document.getElementById('profileImagePreview');
+    
+    if (!imageInput || !imagePreview) {
+        console.error('Image input or preview elements not found');
+        return;
+    }
+
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) {
+            console.log('No file selected');
+            return;
+        }
+
+        console.log('File selected:', {
+            name: file.name,
+            type: file.type,
+            size: file.size
+        });
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            console.error('Invalid file type:', file.type);
+            alert('Please select an image file');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            console.error('File too large:', file.size);
+            alert('Image size should be less than 5MB');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            console.log('FileReader loaded successfully');
+            imagePreview.src = event.target.result;
+            imagePreview.style.display = 'block';
+            console.log('Preview image updated');
+        };
+        reader.onerror = function(error) {
+            console.error('Error reading file:', error);
+            alert('Error reading image file');
+        };
+        console.log('Starting to read file as DataURL');
+        reader.readAsDataURL(file);
+    });
+}
+
+// validate profile form
+function validateProfileForm() {
+    const newPassword = document.getElementById('hrNewPassword').value;
+    const confirmPassword = document.getElementById('hrConfirmPassword').value;
+    const email = document.getElementById('hrEmail').value;
+    
+    // validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address');
+        return false;
+    }
+    
+    // check if passwords match when changing password
+    if (newPassword || confirmPassword) {
+        if (newPassword !== confirmPassword) {
+            alert('New passwords do not match');
+            return false;
+        }
+        if (newPassword.length < 8) {
+            alert('Password must be at least 8 characters long');
+            return false;
+        }
+        if (!document.getElementById('hrCurrentPassword').value) {
+            alert('Please enter your current password to make changes');
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+// update profile settings
+async function updateProfileSettings(event) {
+    event.preventDefault();
+    
+    if (!validateProfileForm()) {
+        return;
+    }
+
+    try {
+        // Create FormData object
+        const formData = new FormData();
+        
+        // Add text fields
+        formData.append('firstName', document.getElementById('hrFirstName').value.trim());
+        formData.append('lastName', document.getElementById('hrLastName').value.trim());
+        formData.append('email', document.getElementById('hrEmail').value.trim());
+        formData.append('dateOfBirth', document.getElementById('hrDOB').value);
+        formData.append('currentPassword', document.getElementById('hrCurrentPassword').value);
+        
+        // Add new password if provided
+        const newPassword = document.getElementById('hrNewPassword').value;
+        if (newPassword) {
+            formData.append('newPassword', newPassword);
+        }
+
+        // Add profile image if selected
+        const imageFile = document.getElementById('profileImage').files[0];
+        if (imageFile) {
+            formData.append('profileImage', imageFile);
+        }
+
+        // Send request
+        const response = await fetch('/hr/update-profile', {
+            method: 'PUT',
+            body: formData // Don't set Content-Type header, let browser set it
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to update profile');
+        }
+
+        const data = await response.json();
+        alert('Profile updated successfully!');
+        
+        // Clear password fields
+        document.getElementById('hrCurrentPassword').value = '';
+        document.getElementById('hrNewPassword').value = '';
+        document.getElementById('hrConfirmPassword').value = '';
+        
+        // Refresh profile data
+        await showProfileSettings();
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating profile: ' + error.message);
+    }
+}
+
+async function loadJobCategories() {
+    try {
+        console.log('Fetching job categories...');
+        const response = await fetch('/hr/job-categories');
+        const categories = await response.json();
+        console.log('Received categories:', categories);
+        
+        const categorySelect = document.getElementById('jobCategory');
+        // Clear existing options except the default one
+        categorySelect.innerHTML = '<option value="">Select Category</option>';
+        
+        // Add categories from database
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.JobCategory_ID;
+            option.textContent = category.JobCategory_Name;
+            categorySelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading job categories:', error);
+    }
+}
+
+function showProfileError(message) {
+    const errorDiv = document.getElementById('profile-error-message');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    } else {
+        alert(message);
+    }
+}
+
+function clearProfileError() {
+    const errorDiv = document.getElementById('profile-error-message');
+    if (errorDiv) {
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
     }
 } 

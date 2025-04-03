@@ -62,7 +62,6 @@ router.post('/delete', async (req, res) => {
     }
 
     const { ids } = req.body;
-	console.log('Delete WorkExp_ID: ', ids);
     if (!Array.isArray(ids) || ids.length === 0) {
         return res.status(400).send('No IDs provided');
     }

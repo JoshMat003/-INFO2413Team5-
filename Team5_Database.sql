@@ -481,7 +481,7 @@ create table JobPost_Table (
     JobPost_Description text
 );
 |-------------------------------------------------------------|
-create table JoApplication_Table (
+create table JobApplication_Table (
 	Application_ID varchar(8) not null,
     SubmitAt date not null,
     Job_ID  varchar(8) not null,

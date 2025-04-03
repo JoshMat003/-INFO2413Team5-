@@ -1,24 +1,24 @@
         .job-post-card {
-            background: #fff;
+            background: #263043;
             padding: 20px;
             margin-bottom: 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: white;
         }
 
         .apply-button {
-            background-color: #4CAF50;
+            background: #4CAF50;
             color: white;
             padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         
         .apply-button:hover {
-            background-color: #45a049;
+            background: #45a049;
         }
         
         .back-button {
@@ -42,17 +42,19 @@
         }
 
         .job-post-card h3 {
-            color: #333;
+            color: #2962ff;
             margin-bottom: 15px;
+            font-size: 1.2rem;
         }
 
         .job-post-card p {
             margin: 8px 0;
-            color: #666;
+            color: white;
         }
 
         .job-post-card strong {
-            color: #333;
+            color: #4CAF50;
+            font-weight: 600;
         }
 
         .center-button {
@@ -77,7 +79,6 @@
         }
 
         .jobTitle {
-
             max-width: 50em;
         }
 
@@ -230,3 +231,105 @@
         .status-button:hover { background-color: #ffed4a; }
         .accept-button:hover { background-color: #45a049; }
         .reject-button:hover { background-color: #da190b; }
+
+        .search-wrapper {
+            padding: 20px;
+            background-color: #263043;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            background-color: #263043;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #3c91e6;
+            border-radius: 4px;
+            background-color: #1a2232;
+            color: white;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #3c91e6;
+            box-shadow: 0 0 0 2px rgba(60, 145, 230, 0.2);
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            background-color: #3c91e6;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-button:hover {
+            background-color: #357abd;
+        }
+
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #3c91e6;
+            border-radius: 4px;
+            background-color: #1a2232;
+            color: white;
+            font-size: 14px;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #3c91e6;
+            box-shadow: 0 0 0 2px rgba(60, 145, 230, 0.2);
+        }
+
+        .filter-group select option {
+            background-color: #1a2232;
+            color: white;
+        }
+
+        .salary-inputs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .salary-inputs input {
+            flex: 1;
+        }
+
+        .salary-inputs span {
+            color: white;
+        }

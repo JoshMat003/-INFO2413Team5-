@@ -1,0 +1,428 @@
+<!DOCTYPE html> <!--v2-->
+<html lang="en">
+<!--Header session -->
+<head>
+	<meta charset="UTF8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Add Preferred Job</title>
+	 <!-- google font -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+     <!-- icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+	
+	<!-- css file-->
+	<link rel="stylesheet" href="/CSS/ApplicantDashboard.css">
+	
+</head>
+
+<body>
+<div class="grid-container">
+	<!-- top bar -->
+	<header class="header">
+		<div class="header-right">                 
+			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
+		</div>
+	</header>
+	<!-- end top bar -->
+	
+		
+	<!-- menu on the left -->
+	<aside id="sidebar">
+		<div class="sidebar-title">
+			<div class="sidebar-brand">
+				WELCOME <br> <span id="applicantFirstName"></span>!
+			</div>
+			
+		</div>
+
+		<ul class="sidebar-list">
+			<li class="sidebar-list-item" onclick="showDashBoard()"><span class="material-symbols-outlined">dashboard</span> Dashboard</li>
+				
+			<li class="sidebar-list-item" onclick="AddEducationDetail()"><span class="material-symbols-outlined">add_ad</span> Add Education Detail</li>
+			<li class="sidebar-list-item" onclick="ViewEducationDetail()"><span class="material-symbols-outlined">post</span> View & Edit Education Detail</li>
+			
+			<li class="sidebar-list-item" onclick="AddWorkExperience()"><span class="material-symbols-outlined">add_ad</span> Add Work Experience</li>
+			<li class="sidebar-list-item" onclick="ViewWorkExperience()"><span class="material-symbols-outlined">post</span> View & Edit Work Experience</li>
+			
+			<li class="sidebar-list-item" onclick="AddPreferredJob()"><span class="material-symbols-outlined">add_ad</span> Add Preferred Job</li>
+			<li class="sidebar-list-item" onclick="ViewPreferredJob()"><span class="material-symbols-outlined">post</span> View & Edit Preferred Job</li>
+							
+			<li class="sidebar-list-item" onclick="ViewJobPost()"><span class="material-symbols-outlined">work</span> View & Apply Job Post</li>
+			<li class="sidebar-list-item" onclick="ViewApplicantDetail()"><span class="material-symbols-outlined">settings</span> View & Edit Profile Settings</li>
+		</ul>
+	</aside>
+	<!-- end menu on the left -->
+			
+	<!-- main stuff -->
+	<main class="main-container">
+		
+		<!-- home screen -->
+		<div id="dashboard-view">
+			
+			<div class="main-title">
+			<h2>Add Preferred Job</h2>
+			</div>
+			
+		</div>	
+		<!-- end home screen-->		
+		
+		<!--form to store user education details
+		The post should generate a new Education_ID for each record.
+		Then store Applicant_ID, Jobcategory_ID, JobTitle_ID, JobPosition_ID, PreferredMaxSalary, PreferredMinSalary
+		//-->
+		
+		<form id="preferredJobForm">
+			
+			<blockquote>
+				<label for="jobCategory">Please Select Your Preferred Job Category:</lable><br>
+				<select size="1" name="jobCategory" id="jobCategory">
+					<option value="">Select your option</option>
+					<option value="1">Healthcare</option>
+					<option value="2">Information Technology</option>
+					<option value="3">Engineering</option>
+					<option value="4">Education</option>
+					<option value="5">Finance and Accounting</option>
+					<option value="6">Construction and Trades</option>
+					<option value="7">Sales and Marketing</option>
+					<option value="8">Hospitality and Tourism</option>
+					<option value="9">Manufacturing and Production</option>
+					<option value="10">Research and Development</option>
+				</select>
+			</blockquote>
+			
+			<blockquote>
+				<label for="jobTitle">Please Select Your Preferred Job Title:</lable><br>
+				<select size="1" name="jobTitle" id="jobTitle">
+				<option value="">Select your option</option>
+					<optgroup label="Healthcare">
+						<option value="101">Nurse</option>
+						<option value="102">Physician</option>
+						<option value="103">Pharmacist</option>
+						<option value="104">Medical Assistant</option>
+						<option value="105">Physical Therapist</option>
+						<option value="106">Occupational Technologist</option>
+						<option value="107">Radiologic Technologist</option>
+						<option value="108">Surgical Technician</option>
+						<option value="109">Health Information Manager</option>
+						<option value="110">Clinical Research Coordinator</option>
+					</optgroup>
+					
+					<optgroup label="Information Technology">
+						<option value="201">Software Developer</option>
+						<option value="202">Systems Analyst</option>
+						<option value="203">Network Administrator</option>
+						<option value="204">Data Scientist</option>
+						<option value="205">IT Support Specialist</option>
+						<option value="206">Cybersecurity Analyst</option>
+						<option value="207">Database Administrator</option>
+						<option value="208">Web Developer</option>
+						<option value="209">Cloud Solutions Architect</option>
+						<option value="210">DevOps Engineer</option>
+					</optgroup>
+					
+					<optgroup label="Engineering">
+						<option value="301">Civil Engineer</option>
+						<option value="302">Mechanical Engineer</option>
+						<option value="303">Electrical Engineer</option>
+						<option value="304">Chemical Engineer</option>
+						<option value="305">Software Engineer</option>
+						<option value="306">Environmental Engineer</option>
+						<option value="307">Structural Engineer</option>
+						<option value="308">Industrial Engineer</option>
+						<option value="309">Aerospace Engineer</option>
+						<option value="310">Project Engineer</option>
+					</optgroup>
+					
+					<optgroup label="Education">
+						<option value="401">Teacher</option>
+						<option value="402">School Counselor</option>
+						<option value="403">Principal</option>
+						<option value="404">Special Education Teacher</option>
+						<option value="405">Educational Administrator</option>
+						<option value="406">Curriculum Developer</option>
+						<option value="407">Early Childhood Educator</option>
+						<option value="408">Instructional Designer</option>
+						<option value="409">University Professor</option>
+						<option value="410">Adult Education Instructor</option>
+					</optgroup>
+					
+					<optgroup label="Finance and Accounting">
+						<option value="501">Accountant</option>
+						<option value="502">Financial Analyst</option>
+						<option value="503">Auditor</option>
+						<option value="504">Tax Specialist</option>
+						<option value="505">Controller</option>
+						<option value="506">Investment Banker</option>
+						<option value="507">Financial Planner</option>
+						<option value="508">Budget analyst</option>
+						<option value="509">Payroll Specialist</option>
+						<option value="510">Credit Analyst</option>
+					</optgroup>
+					
+					<optgroup label="Construction and Trades">
+						<option value="601">Construction Manager</option>
+						<option value="602">Electrician</option>
+						<option value="603">Plumber</option>
+						<option value="604">Carpenter</option>
+						<option value="605">Heavy Equipment Operator</option>
+						<option value="606">Mason</option>
+						<option value="607">HAVC Technician</option>
+						<option value="608">Project Superintendent</option>
+						<option value="609">Construction Estimator</option>
+						<option value="610">Building Inspector</option>
+					</optgroup>
+					
+					<optgroup label="Sales and Marketing">
+						<option value="701">Sales Representative</option>
+						<option value="702">Marketing Manager</option>
+						<option value="703">Brand Manager</option>
+						<option value="704">Business Development Manager</option>
+						<option value="705">Account Executive</option>
+						<option value="706">Digital Marketing Specialist</option>
+						<option value="707">Market Research Analyst</option>
+						<option value="708">Sales Engineer</option>
+						<option value="709">Social Media Manager</option>
+						<option value="710">Content Marketing Specialist</option>
+					</optgroup>
+					
+					<optgroup label="Hospitality and Production">
+						<option value="801">Hotel Manager</option>
+						<option value="802">Event PLanner</option>
+						<option value="803">Restaurant Manager</option>
+						<option value="804">Travel Agent</option>
+						<option value="805">Tour Guide</option>
+						<option value="806">Front Desk Agent</option>
+						<option value="807">Chef</option>
+						<option value="808">Concierge</option>
+						<option value="809">Catering Manager</option>
+						<option value="810">Housekeeping Supervisor</option>
+					</optgroup>
+					
+					<optgroup label="Manufacturing and Production">
+						<option value="901">Production Supervisor</option>
+						<option value="902">Quality Control Inspector</option>
+						<option value="903">Manufacturing Engineer</option>
+						<option value="904">Assembly Line Worker</option>
+						<option value="905">Process Technician</option>
+						<option value="906">Supply Chain Manager</option>
+						<option value="907">Machine Operator</option>
+						<option value="908">Inventory Control Specialist</option>
+						<option value="909">Warehouse Manager</option>
+						<option value="910">Logistics Coordinator</option>
+						
+					</optgroup>
+					
+					<optgroup label="Research and Development">
+						<option value="1001">Research Scientist</option>
+						<option value="1002">Production Development Engineer</option>
+						<option value="1003">Clinical Research Associate</option>
+						<option value="1004">R&D Manager</option>
+						<option value="1005">Biochemist</option>
+						<option value="1006">Market Research Analyst</option>
+						<option value="1007">Laboratory Technician</option>
+						<option value="1008">Data Analyst</option>
+						<option value="1009">Innovation Consultant</option>
+						<option value="1010">Research Analyst</option>
+					</optgroup>
+				</select>
+			</blockquote>
+				
+			<blockquote>
+				<label for="jobPosition">Please Select Your Preferred Job Position:</lable><br>
+				<select size="1" name="jobPosition" id="jobPosition">
+					<option value="">Select your option</option>
+					<option value="1">Full-Time</option>
+					<option value="2">Part-Time</option>
+					<option value="3">Remote Job</option>
+					<option value="4">Co-op</option>
+				</select>
+			</blockquote>
+			
+			<blockquote>
+				<label for="maxSalary">Please Select Your Preferred Max Year Salary:</lable><br>
+				<select size="1" name="maxSalary" id="maxSalary">
+					<option value="">Select your option</option>
+					<option value="260000">$260,000</option>
+					<option value="270000">$270,000</option>
+					<option value="280000">$280,000</option>
+					<option value="290000">$290,000</option>
+					<option value="300000">$300,000</option>
+					<option value="310000">$310,000</option>
+					<option value="320000">$320,000</option>
+					<option value="330000">$330,000</option>
+					<option value="340000">$340,000</option>
+					<option value="350000">$350,000</option>
+					<option value="360000">$360,000</option>
+					<option value="370000">$370,000</option>
+					<option value="380000">$380,000</option>
+					<option value="390000">$390,000</option>
+					<option value="400000">$400,000 or about</option>
+					
+				</select>
+			</blockquote>
+			
+			<blockquote>
+				<label for="minSalary">Please Select Your Preferred Min Year Salary:</lable><br>
+				<select size="1" name="minSalary" id="minSalary">
+					<option value="">Select your option</option>
+					<option value="20000">$2,000</option>
+					<option value="30000">$3,000</option>
+					<option value="40000">$4,000</option>
+					<option value="50000">$5,000</option>
+					<option value="60000">$6,000</option>
+					<option value="70000">$7,000</option>
+					<option value="80000">$8,000</option>
+					<option value="90000">$9,000</option>
+					<option value="100000">$10,000</option>
+					<option value="110000">$11,000</option>
+					<option value="120000">$12,000</option>
+					<option value="130000">$13,000</option>
+					<option value="140000">$14,000</option>
+					<option value="150000">$15,000</option>
+					<option value="160000">$16,000</option>
+					<option value="170000">$17,000</option>
+					<option value="180000">$18,000</option>
+					<option value="190000">$19,000</option>
+					<option value="200000">$20,000</option>
+					<option value="210000">$21,000</option>
+					<option value="220000">$22,000</option>
+					<option value="230000">$23,000</option>
+					<option value="240000">$24,000</option>
+					<option value="250000">$25,000</option>
+				</select>
+			</blockquote>
+			<input type="Submit">
+		</form>
+	
+	</main>
+	<!-- end home screen-->	
+</div>	
+	<script>
+		document.addEventListener('DOMContentLoaded', async () => {
+			const response = await fetch('/applicant/dashboard/details');
+			console.log('Response status:', response.status);
+			if (response.ok) {
+				const applicantDetails = await response.json();
+				console.log('Fetched data:', applicantDetails);
+				document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+			} else {
+				 console.error('Failed to fetch applicant details');
+			}
+			
+			
+			document.getElementById('preferredJobForm').addEventListener('submit', async (event) => {
+			event.preventDefault(); // prevent default form submission
+		
+			try{
+				const formData = new FormData(event.target);
+				const data = Object.fromEntries(formData.entries());
+				
+				const submitResponse = await fetch('/preferredJobForm/submit', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(data),
+				
+				});
+				
+				if (submitResponse.ok) {
+					alert('Preferred Job saved successfully!');
+					window.location.href = 'CheckPreferredJob.html'
+				} else {
+					alert('Failed to save Preferred Job.');
+					window.location.href = 'AddPreferredJob.html'
+				}
+			} catch (error) {
+				alert('An error occured while updating the preferred job details.');
+				console.error(error)};
+			});
+		});
+		
+		async function checkLogin() {
+			try {
+				const checkLoginResponse = await fetch('/applicant/checkLogin');
+				console.log('checkLoginResponse:', checkLoginResponse);
+				
+				if (checkLoginResponse.ok) {
+					const data = await checkLoginResponse.json();
+					if (data.loggedIn) {
+						console.log('Applicant Login Check Valid.');
+					} else {
+						console.log('Applicant Login Check Invalid. Redirecting to login.');
+						window.location.href = '/login.html'; // Redirect to login.html
+					}
+				} else {
+					console.log('Applicant Login Check Invalid. Redirecting to login.');
+					window.location.href = '/login.html'; // Handle other non-200 responses
+				}
+			} catch (error) {
+				console.error('Error checking Applicant login:', error);
+				window.location.href = '/login.html'; // Redirect on error as well
+			}
+		}
+		
+		async function signOut() {
+			try {
+				const signOutResponse = await fetch('/applicant/signOut', {
+					method: 'POST'
+				});
+				
+				if (signOutResponse.ok) {
+					sessionStorage.clear(); // clear client session
+					// check clear success or not then redirect to related page
+					if (sessionStorage.length === 0) {
+					window.location.href = '/signedOut.html'; // Redirect to signedOut.html if clearing was successful
+					} else {
+						console.error('Failed to clear client session storage.');
+					}
+				} else {
+					console.error('Failed to clear server session.');
+				}
+			} catch (error) {
+				console.error('Error during sign out : ', error);
+			}
+			
+		}
+	
+		function showDashBoard() {
+            window.location.href = '/ApplicantDashboard.html';
+        }
+
+        function AddEducationDetail() {
+            window.location.href = '/AddEducationDetail.html';
+        }
+
+        function ViewEducationDetail() {
+            window.location.href = '/CheckEducationDetail.html';
+        }
+
+        function AddWorkExperience() {
+            window.location.href = '/AddWorkExperience.html';
+        }
+
+        function ViewWorkExperience() {
+            window.location.href = '/CheckWorkExperience.html';
+        }
+
+        function AddPreferredJob() {
+            window.location.href = '/AddPreferredJob.html';
+        }
+		
+		function ViewPreferredJob() {
+            window.location.href = '/CheckPreferredJob.html';
+        }
+		
+		function ViewJobPost() {
+            window.location.href = '/ApplicantJobPosts.html';
+        }
+		
+		function ViewApplicantDetail() {
+            window.location.href = '/CheckApplicantDetail.html';
+        }
+		window.onload = checkLogin;
+	</script>
+</body>
+</html>
+

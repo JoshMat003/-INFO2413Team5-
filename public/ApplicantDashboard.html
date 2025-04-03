@@ -11,14 +11,15 @@
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 	
 	<!-- css file-->
-	<link rel="stylesheet" href="/CSS/ApplicantDashboard.css">
+	<link rel="stylesheet" href="/CSS/applicantDashboard.css">
 	
 </head>
 <body>
 <div class="grid-container">
 	<!-- top bar -->
 	<header class="header">
-		<div class="header-right">                 
+		<div class="header-right">
+			<span class="material-symbols-outlined" onclick="showNotifications()" id="notificationBell">notifications</span>                 
 			<span class="material-symbols-outlined" onclick="signOut()" title="Sign Out">account_circle</span>
 		</div>
 	</header>
@@ -58,21 +59,29 @@
 		
 		<!-- home screen -->
 		<div id="dashboard-view">
-			
 			<div class="main-title">
 			<h2>APPLICANT DASHBOARD</h2>
 			</div>
-			
+			<b> Display Something or Function Cards</b><br><br>
 		</div>	
 		<!-- end home screen-->	
 		
-	<b> Display Something or Function Cards</b><br><br>
-	
+		<!-- Notifications View -->
+		<div id="notifications-view" style="display: none;">
+			<div class="main-title">
+				<h2>NOTIFICATIONS</h2>
+				<button onclick="showDashBoard()" class="back-button">
+					<span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+				</button>
+			</div>
+			<div id="notifications-container" class="notifications-container">
+				<!-- Notifications will be loaded here -->
+			</div>
+		</div>
 		
 	</main>	
 	<!-- end main stuff -->	
 		
-	
 </div>
 <script>
 		console.log('dashboard.js script has been loaded.');
@@ -131,12 +140,104 @@
         }
 		
 		function ViewJobPost() {
-			winodws.location.href = '/applicantJobPosts.html';
+			window.location.href = '/jobPost.html';
 		}
 		
 		function ViewApplicantDetail() {
             window.location.href = '/CheckApplicantDetail.html';
         }
+
+		function showNotifications() {
+			// Hide dashboard view
+			document.getElementById('dashboard-view').style.display = 'none';
+			
+			// Show notifications view
+			document.getElementById('notifications-view').style.display = 'block';
+			
+			// Load notifications
+			loadNotifications();
+		}
+
+		async function loadNotifications() {
+			try {
+				const response = await fetch('/applicant/notifications');
+				if (response.ok) {
+					const notifications = await response.json();
+					const container = document.getElementById('notifications-container');
+					container.innerHTML = ''; // Clear existing notifications
+					
+					notifications.forEach(notification => {
+						const notificationElement = document.createElement('div');
+						notificationElement.className = 'notification-item' + (notification.read ? '' : ' unread');
+						notificationElement.innerHTML = `
+							<div class="notification-content">
+								<h3>${notification.title}</h3>
+								<p>${notification.message}</p>
+								<small>${new Date(notification.created_at).toLocaleString()}</small>
+							</div>
+							<button onclick="markAsRead('${notification.id}')" class="mark-read-btn">
+								<span class="material-symbols-outlined">done</span>
+							</button>
+						`;
+						container.appendChild(notificationElement);
+					});
+					
+					// Update notification count
+					updateNotificationCount(notifications.filter(n => !n.read).length);
+				}
+			} catch (error) {
+				console.error('Error loading notifications:', error);
+			}
+		}
+
+		function updateNotificationCount(count) {
+			const bell = document.getElementById('notificationBell');
+			if (count > 0) {
+				bell.setAttribute('data-count', count);
+				bell.classList.add('has-notifications');
+			} else {
+				bell.removeAttribute('data-count');
+				bell.classList.remove('has-notifications');
+			}
+		}
+
+		async function markAsRead(notificationId) {
+			try {
+				const response = await fetch(`/applicant/notifications/${notificationId}/read`, {
+					method: 'POST'
+				});
+				if (response.ok) {
+					loadNotifications(); // Reload notifications
+				}
+			} catch (error) {
+				console.error('Error marking notification as read:', error);
+			}
+		}
+
+		// Load notifications count on page load
+		document.addEventListener('DOMContentLoaded', async () => {
+			try {
+				// Load applicant name
+				const response = await fetch('/applicant/dashboard/details');
+				console.log('Response status:', response.status);
+				if (response.ok) {
+					const applicantDetails = await response.json();
+					console.log('Fetched data:', applicantDetails);
+					document.getElementById('applicantFirstName').textContent = applicantDetails.name;
+				} else {
+					console.error('Failed to fetch applicant details');
+				}
+
+				// Load notification count
+				const notifResponse = await fetch('/applicant/notifications/unread-count');
+				if (notifResponse.ok) {
+					const { count } = await notifResponse.json();
+					updateNotificationCount(count);
+				}
+			} catch (error) {
+				console.error('Error loading data:', error);
+			}
+		});
 </script>	
 </body>
 </html>

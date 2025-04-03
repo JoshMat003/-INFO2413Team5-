@@ -1,5 +1,5 @@
 // get mysql package
-const mysql = require('mysql');
+const mysql = require('mysql2/promise');
 
 // set up database connection info
 const pool = mysql.createPool({
@@ -7,19 +7,36 @@ const pool = mysql.createPool({
 	user: 'root',
 	password: '',
 	database: 'team5dbv2',
+	waitForConnections: true,
+	connectionLimit: 10,
+	queueLimit: 0
 });
 
-// let other files use the database
+// Export the pool and helper functions
 module.exports = {
-	// run database commands
-	query: (sql, values) => {
-		return new Promise((resolve, reject) => {
-			pool.query(sql, values, (error, results) => {
-				if (error) {
-					return reject(error);
-				}
-				resolve(results);
-			});
-		});
-	},		
+	// Get a connection from the pool
+	getConnection: () => {
+		return pool.getConnection();
+	},
+	
+	// Run database queries
+	query: async (sql, values) => {
+		const [results] = await pool.execute(sql, values);
+		return results;
+	},
+
+	// Begin a transaction
+	beginTransaction: async (connection) => {
+		await connection.beginTransaction();
+	},
+
+	// Commit a transaction
+	commit: async (connection) => {
+		await connection.commit();
+	},
+
+	// Rollback a transaction
+	rollback: async (connection) => {
+		await connection.rollback();
+	}
 };
