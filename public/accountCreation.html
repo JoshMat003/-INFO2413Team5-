@@ -11,25 +11,24 @@
         <h1>Create Your<br>HireHub Account</h1>
 
         <form id="signupForm">
-            <label for="firstName">First Name:</label>
-            <input type="text" id="firstName" name="firstName" required>
+            <label>Username:</label>
+            <input type="text" id="username" name="username" required>
 
-            <label for="lastName">Last Name:</label>
-            <input type="text" id="lastName" name="lastName" required>
-			
-			<label for="dateOfBirth">Date of Birth:</label>
-            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
-
-            <label for="email">Email:</label>
+            <label>Email:</label>
             <input type="email" id="email" name="email" required>
 
-            <label for="phoneNum">Phone Number:</label>
-            <input type="tel" id="phoneNum" name="phoneNum" required>
+            <label>Phone Number:</label>
+            <input type="number" id="phoneNumber" name="phoneNumber" required 
+                   minlength="10" maxlength="10" oninput="this.value = this.value.slice(0,10)">
 
-            <label for="password">Password:</label>
+            <label>Age:</label>
+            <input type="number" id="age" name="age" required 
+                   minlength="2" maxlength="2" oninput="this.value = this.value.slice(0,2)">
+
+            <label>Password:</label>
             <input type="password" id="password" name="password" required>
-			
-            <label for="confirmPassword">Confirm Password:</label>
+
+            <label>Confirm Password:</label>
             <input type="password" id="confirmPassword" name="confirmPassword" required>
 
             <div class="remember-me">
@@ -44,42 +43,46 @@
     </div>
 
     <script>
-     document.getElementById('signupForm').addEventListener('submit', async (event) => {
-		event.preventDefault(); // Prevent the default form submission
+        document.getElementById('signupForm').onsubmit = async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const age = document.getElementById('age').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-		const password = document.getElementById('password').value;
-		const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
 
-		// Check if passwords match
-		if (password !== confirmPassword) {
-			alert('Passwords do not match. Please try again.');
-			return;
-		}
+            try {
+                const response = await fetch('/applicant/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        email,
+                        phoneNumber,
+                        age,
+                        password
+                    })
+                });
 
-		const formData = new FormData(event.target);
-		const data = Object.fromEntries(formData.entries());
-	
-		try {
-			const response = await fetch('/applicant/register', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(data),
-			});
-
-			if (response.ok) {
-				alert('Registration successful! You can now log in.');
-				window.location.href = 'ApplicantLogin_v1.html'; // Redirect to login page
-			} else {
-				const error = await response.json();
-				alert(`Try Registration Failed: ${error.message}`);
-			}
-		} catch (error) {
-			console.error('Error during registration:', error);
-			alert('An error occurred. Please try again later.');
-		}
-	});
+                if (response.ok) {
+                    alert('Account created successfully!');
+                    window.location.href = '/login.html';
+                } else {
+                    alert('Error creating account. Please try again.');
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+            }
+        };
     </script>
 </body>
 </html> 

@@ -3,8 +3,6 @@ const router = express.Router();
 const db = require('../db'); // Import db.js from up one folder././db.js
 const path = require('path');
 const bcrypt = require('bcrypt');
-const multer = require('multer');
-const applicantPictureUpload = multer({storage: multer.memoryStorage() });
 
 // function to generate the new or next Applicant_ID
 async function generateApplicantID() {
@@ -61,7 +59,6 @@ router.post('/login', async (req, res) => {
         res.status(500).send({ message: 'Login failed. Please try again.' });
     }
 
-
 });
 
 // Serve the applicant dashboard page
@@ -92,58 +89,11 @@ router.get('/sessionDetails', (req, res) => {
     if (!req.session.applicantID) {
         return res.sendStatus(401);
     }
-     res.json({
+    res.json({
         id: req.session.applicantID,
         name: req.session.applicantFirstName
     });
 });
-
-// router handle get applicant details with applicant_ID for CheckApplicantDetail.html
-router.get('/details', async (req, res) => {
-	if (!req.session.applicantID) {
-		return res.status(401).send('Unauthorized access to update detail');
-	}
-	
-	
-	
-	try {
-		const sql = `SELECT Applicant_ID, Applicant_Firstname, Applicant_LastName, DATE_FORMAT(Applicant_DateOfBirth, '%Y-%m-%d') AS Applicant_DateOfBirth, Applicant_Email, Applicant_PhoneNum FROM Applicant_Table 
-		WHERE Applicant_ID = ? 
-		`;
-		
-		const result = await db.query(sql, [req.session.applicantID]);
-		
-		if (result.length > 0 ) {
-			res.json(result[0]);
-		} else {
-			res.status(404).send('Education record not found');
-		}
-	} catch (error) { 
-		consloe.error('Error fetching education details for ID:', educationID, error);
-		res.status(500).send('Internal Server Error');
-	}	
-});
-
-// router handle update applicant details with applicant_ID for UpdateApplicantDetail.html
-router.post('/updateApplicantDetail', async (req, res) => {
-if (!req.session.applicantID) {
-		return res.status(401).send('Unauthorized');
-	}
-	
-	const { firstName, lastName, dateOfBirth, email, phoneNum } = req.body;
-
-	try {
-		const sql = `UPDATE Applicant_Table
-		SET Applicant_FirstName = ?, Applicant_LastName = ?, Applicant_DateOfBirth = ?, Applicant_Email = ?, Applicant_PhoneNum = ? WHERE Applicant_ID = ?
-		`;
-		
-		await db.query(sql, [firstName, lastName, dateOfBirth, email, phoneNum, req.session.applicantID]);
-		res.status(204).send(); // reply response to updateWorkExperience.html
-	} catch (error) {
-		console.error('Error update applicant deatils : ', error);
-		res.status(500).send('Internal Server Error');
-	}
-});	
 
 // router handle applicant registration
 router.post('/register', async (req, res) => {
@@ -173,7 +123,7 @@ router.post('/register', async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
         await db.query(sql, [applicantId, firstName, lastName, dateOfBirth, email, phoneNum, hashedPassword]);
-        res.status(204).send();
+        res.status(201).send({ message: 'Applicant registered successfully.' });
     } catch (error) {
         console.error('Error registering applicant:', error);
         res.status(500).send({ message: 'Registration failed. Please try again.' });
@@ -198,27 +148,71 @@ router.get('/job-posts', (req, res) => {
 // get available jobs
 router.get('/available-jobs', async (req, res) => {
     try {
+        console.log('Fetching available jobs...');
+        
+        // First, test if we can access the tables
+        const testQuery = `
+            SELECT COUNT(*) as count 
+            FROM jobpost_table`;
+        const testResult = await db.query(testQuery);
+        console.log('Total jobs in database:', testResult[0].count);
+
+        // Main query with exact table and column names
         const query = `
             SELECT 
-                job_id,
-                job_title,
-                job_position,
-                annual_salary,
-                city,
-                province,
-                job_post_description,
-                application_due_date,
-                minimum_education,
-                required_experience
-            FROM jobpost_table
-            WHERE application_due_date > CURRENT_DATE()
-            ORDER BY application_due_date ASC`;
-        
+                j.job_id,
+                j.job_title,
+                j.job_position,
+                j.annual_salary,
+                j.city,
+                j.province,
+                j.job_post_description,
+                j.application_due_date,
+                j.minimum_education,
+                j.required_experience,
+                j.job_category_id,
+                c.JobCategory_Name
+            FROM jobpost_table j
+            LEFT JOIN jobcategory_table c ON j.job_category_id = c.JobCategory_ID`;
+
+        console.log('Executing main query:', query);
         const results = await db.query(query);
-        res.json(results);
+        console.log('Query results:', results);
+
+        if (!results || results.length === 0) {
+            console.log('No jobs found in database');
+            return res.json([]);
+        }
+
+        // Transform and log each job to ensure data is correct
+        const transformedResults = results.map(job => {
+            console.log('Processing job:', job);
+            return {
+                job_id: job.job_id,
+                job_title: job.job_title,
+                job_position: job.job_position,
+                annual_salary: job.annual_salary,
+                city: job.city,
+                province: job.province,
+                job_post_description: job.job_post_description,
+                application_due_date: job.application_due_date,
+                minimum_education: job.minimum_education,
+                required_experience: job.required_experience,
+                job_category_id: job.job_category_id,
+                JobCategory_Name: job.JobCategory_Name
+            };
+        });
+
+        console.log('Sending jobs to client. Count:', transformedResults.length);
+        res.json(transformedResults);
+
     } catch (error) {
-        console.error('Error fetching available jobs:', error);
-        res.status(500).json({ error: 'Failed to fetch available jobs' });
+        console.error('Error in /available-jobs:', error);
+        res.status(500).json({ 
+            error: 'Failed to fetch jobs', 
+            details: error.message,
+            stack: error.stack 
+        });
     }
 });
 
@@ -233,7 +227,7 @@ router.post('/apply', async (req, res) => {
     try {
         // Check if already applied
         const checkQuery = `
-            SELECT * FROM job_applications 
+            SELECT * FROM jobapplication_table 
             WHERE applicant_id = ? AND job_id = ?`;
         const existing = await db.query(checkQuery, [req.session.applicantID, jobId]);
         
@@ -243,7 +237,7 @@ router.post('/apply', async (req, res) => {
 
         // Insert new application
         const query = `
-            INSERT INTO job_applications (applicant_id, job_id, application_date, status)
+            INSERT INTO jobapplication_table  (applicant_id, job_id, SubmitAt, Status)
             VALUES (?, ?, CURRENT_DATE(), 'pending')`;
         
         await db.query(query, [req.session.applicantID, jobId]);
@@ -254,62 +248,33 @@ router.post('/apply', async (req, res) => {
     }
 });
 
-// get profile picture
-router.get('/profilePicture', async (req, res) => {
-	
-	try {
-		const sql=`SELECT ProfilePicture FROM ApplicantPicture_Table WHERE Applicant_ID = ?`;
-		const getProfilePictureResult = await db.query(sql, [req.session.applicantID]);
-		
-			if (getProfilePictureResult.length > 0) {
-				//res.json({ ProfilePicture: getProfilePictureResult[0].ProfilePicture }); // send back the profile picture
-				
-				const profilePictureBuffer = getProfilePictureResult[0].ProfilePicture;
-				const profilePictureBase64 = profilePictureBuffer.toString('base64');
-				// console.log('Picture in base64 : ', profilePictureBase64) // for debug
-				res.json({ProfilePicture: `data:image/jpeg;base64,${profilePictureBase64}`});
-				
-			} else {
-				res.json({ ProfilePicture: null }); // No picture found
-			}
-		
-	} catch (error) {
-			console.error('Error loading applicant picture : ', error);
-			res.status(500).send('Database error.');
-	}
+// Update the job categories route
+router.get('/job-categories', async (req, res) => {
+    try {
+        console.log('Applicant route: Fetching job categories');
+        const query = `
+            SELECT 
+                JobCategory_ID,
+                JobCategory_Name
+            FROM jobcategory_table
+            ORDER BY JobCategory_Name`;
+        
+        const categories = await db.query(query);
+        console.log('Categories found:', categories);
+        res.json(categories);
+    } catch (error) {
+        console.error('Error fetching job categories:', error);
+        res.status(500).json({ error: 'Failed to fetch job categories' });
+    }
 });
 
-// Upload profile picture
-router.post('/uploadPicture', applicantPictureUpload.single('profilePicture'), async (req, res) => {
-    
-    const profilePicture = req.file.buffer;
-	
-	try {
-		const sql = `INSERT INTO ApplicantPicture_Table (Applicant_ID, ProfilePicture) 
-		VALUES (?, ?) ON DUPLICATE KEY UPDATE ProfilePicture = ?`;
-		
-		await db.query(sql, [req.session.applicantID, profilePicture, profilePicture]);
-		res.status(204).send();
-		
-	} catch (error) {
-		console.error('Error uploading applicant picture :', error);
-		res.status(500).send('Database error');
-	}		
-});
-
-// delete profile picture
-router.delete('/deletePicture', async (req, res) => {
-	
-	try {
-		const sql = `DELETE FROM ApplicantPicture_Table WHERE Applicant_ID = ?`;
-		
-		await db.query(sql, [req.session.applicantID]);
-		res.status(204).send();
-		
-	} catch (error) {
-		console.error('Error delete applicant picture :', error);
-		res.status(500).send('Database error');
-	}
+// Add this error handling middleware at the end of your routes
+router.use((err, req, res, next) => {
+    console.error('Route error:', err);
+    res.status(500).json({ 
+        error: 'Internal server error', 
+        details: process.env.NODE_ENV === 'development' ? err.message : undefined 
+    });
 });
 
 module.exports = router;

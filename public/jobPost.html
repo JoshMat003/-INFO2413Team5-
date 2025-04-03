@@ -32,61 +32,53 @@
 
         <!-- Main Content -->
         <main class="main-container">
-            <div id="view-jobs-button-container" class="center-button">
-                <!-- Search/Filter Form -->
-                <div class="search-form-container">
-                    <form id="jobSearchForm" class="search-form">
-                        <div class="form-grid">
-                            <div class="form-field">
-                                <label for="dueDate">Application Due Date:</label>
-                                <input type="date" id="dueDate" name="dueDate">
-                            </div>
-                            
-                            <div class="form-field">
-                                <label for="jobCategory">Job Category:</label>
-                                <select id="jobCategory" name="jobCategory">
-                                    <option value="">All Categories</option>
-                                    <!-- Categories will be loaded dynamically -->
-                                </select>
-                            </div>
-
-                            <div class="form-field">
-                                <label for="location">Location:</label>
-                                <select id="location" name="location">
-                                    <option value="">All Locations</option>
-                                    <option value="Toronto">Toronto</option>
-                                    <option value="Vancouver">Vancouver</option>
-                                    <option value="Montreal">Montreal</option>
-                                    <option value="Calgary">Calgary</option>
-                                    <option value="Ottawa">Ottawa</option>
-                                </select>
-                            </div>
-
-                            <div class="form-field">
-                                <label>Salary Range:</label>
-                                <div class="salary-inputs">
-                                    <input type="number" id="minSalary" name="minSalary" placeholder="Min" min="0">
-                                    <span>to</span>
-                                    <input type="number" id="maxSalary" name="maxSalary" placeholder="Max" min="0">
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <button onclick="handleViewJobs()" class="view-jobs-button">
-                    <span class="material-symbols-outlined">work</span>
-                    View Available Jobs
-                </button>
-            </div>
-            
-            <div id="job-posts-container" style="display: none">
-                <div class="reset-button-container">
-                    <button onclick="handleReset()" class="reset-button">
-                        <span class="material-symbols-outlined">refresh</span>
-                        Reset View
+            <!-- Search Bar -->
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search for jobs by title, category, or location...">
+                    <button onclick="handleSearch()" class="search-button">
+                        <span class="material-symbols-outlined">search</span>
                     </button>
                 </div>
+            </div>
+            
+            <!-- Add this after the search box div -->
+            <div class="filters-wrapper">
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label for="jobCategory">Category:</label>
+                        <select id="jobCategory" name="jobCategory">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="location">Location:</label>
+                        <select id="location" name="location">
+                            <option value="">All Locations</option>
+                            <option value="Toronto">Toronto</option>
+                            <option value="Vancouver">Vancouver</option>
+                            <option value="Montreal">Montreal</option>
+                            <option value="Calgary">Calgary</option>
+                            <option value="Ottawa">Ottawa</option>
+                            <option value="Regina">Regina</option>
+                            <option value="Mississauga">Mississauga</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="salary-range">Salary Range:</label>
+                        <div class="salary-inputs">
+                            <input type="number" id="minSalary" placeholder="Min" min="0">
+                            <span>to</span>
+                            <input type="number" id="maxSalary" placeholder="Max" min="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Job Posts Container -->
+            <div id="job-posts-container">
                 <!-- Job posts will be loaded here -->
             </div>
         </main>
