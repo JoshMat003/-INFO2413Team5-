@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Send Email</title>
+  <link rel = 'stylesheet' href = "emailsignup.css">
+
+  
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <script type="text/javascript">
+    (function(){
+      emailjs.init("M21zbmCC6LjW0dt4N");
+    })();
+  </script>
+</head>
+
+<div class = "container">
+<body>
+
+    <form id="emailForm" onsubmit="sendMail(event)">
+  <h2>Join Our Mailing List</h2>
+
+
+
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="email" id="email" placeholder="Your Email" required>
+    <button type="submit">Send Email</button>
+  </form>
+
+
+  <script src="emailsignup.js"></script>
+</body>
+</div>
+</html>
